@@ -853,6 +853,37 @@
                 ).join('');
                 excuseList.innerHTML = `<div class="excuse-title">YOUR PATHETIC EXCUSES</div>${excuseItems}`;
             }
+            
+            // Update premium status
+            updatePremiumStatus();
+        }
+        
+        // Update Premium Status Display
+        function updatePremiumStatus() {
+            const premiumBanner = document.querySelector('.premium-banner');
+            const upgradeBtn = document.getElementById('btn-upgrade');
+            
+            if (appState.isPremium) {
+                // Hide upgrade banner and button
+                if (premiumBanner) premiumBanner.style.display = 'none';
+                if (upgradeBtn) upgradeBtn.style.display = 'none';
+                
+                // Show premium active message
+                const premiumScreen = document.getElementById('screen-premium');
+                const contentWrapper = premiumScreen.querySelector('.content-wrapper');
+                if (!document.getElementById('premium-active-message')) {
+                    const activeMessage = document.createElement('div');
+                    activeMessage.id = 'premium-active-message';
+                    activeMessage.className = 'stat-card';
+                    activeMessage.style.marginTop = '20px';
+                    activeMessage.innerHTML = `
+                        <div class="stat-label">STATUS</div>
+                        <div class="stat-number" style="font-size: 48px;">PREMIUM</div>
+                        <div class="stat-label">ACTIVE</div>
+                    `;
+                    contentWrapper.insertBefore(activeMessage, contentWrapper.firstChild.nextSibling.nextSibling);
+                }
+            }
         }
         
         // Navigation
@@ -880,6 +911,9 @@
             // Clean URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
+        
+        // Update premium status on load
+        updatePremiumStatus();
         
         // Check if onboarding is complete
         if (appState.activity && appState.frequency && appState.intensity) {
