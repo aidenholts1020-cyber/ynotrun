@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y NOT RUN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --red: #ff0000;
+            --dark-red: #cc0000;
+            --white: #ffffff;
+            --gray: #333333;
+            --light-gray: #666666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Screens */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid var(--red);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-family: 'Anton', sans-serif;
+            font-size: 48px;
+            letter-spacing: 4px;
+            color: var(--red);
+            text-shadow: 3px 3px 0px rgba(255, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .tagline {
+            font-size: 12px;
+            color: var(--light-gray);
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+        
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 2px solid var(--red);
+            background: transparent;
+            color: var(--red);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            background: var(--red);
+            color: var(--black);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: var(--red);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            background: var(--dark-red);
+            border-color: var(--dark-red);
+        }
+        
+        .btn-small {
+            padding: 12px;
+            font-size: 12px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin: 30px 0;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+            margin-bottom: 15px;
+        }
+        
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .activity-btn {
+            padding: 30px 20px;
+            border: 2px solid var(--gray);
+            background: transparent;
+            color: var(--white);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .activity-btn:hover {
+            border-color: var(--red);
+        }
+        
+        .activity-btn.selected {
+            border-color: var(--red);
+            background: var(--red);
+            color: var(--black);
+        }
+        
+        .frequency-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .frequency-btn {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid var(--gray);
+            background: transparent;
+            color: var(--white);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .frequency-btn:hover {
+            border-color: var(--red);
+        }
+        
+        .frequency-btn.selected {
+            border-color: var(--red);
+            background: var(--red);
+            color: var(--black);
+        }
+        
+        .intensity-slider {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .intensity-option {
+            padding: 20px;
+            border: 2px solid var(--gray);
+            background: transparent;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .intensity-option:hover {
+            border-color: var(--red);
+        }
+        
+        .intensity-option.selected {
+            border-color: var(--red);
+            background: var(--red);
+            color: var(--black);
+        }
+        
+        .intensity-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .intensity-desc {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        
+        /* Home Screen */
+        .stat-card {
+            background: var(--gray);
+            border: 2px solid var(--red);
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Anton', sans-serif;
+            font-size: 72px;
+            color: var(--red);
+            line-height: 1;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+        }
+        
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+        }
+        
+        .day-box {
+            aspect-ratio: 1;
+            border: 2px solid var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .day-box.completed {
+            background: var(--red);
+            border-color: var(--red);
+            color: var(--black);
+        }
+        
+        .day-box.skipped {
+            background: var(--gray);
+            border-color: var(--gray);
+        }
+        
+        .excuse-list {
+            background: var(--gray);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .excuse-title {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+            margin-bottom: 15px;
+        }
+        
+        .excuse-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 12px;
+        }
+        
+        .excuse-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Premium Banner */
+        .premium-banner {
+            background: linear-gradient(135deg, var(--red) 0%, var(--dark-red) 100%);
+            padding: 25px;
+            margin: 30px 0;
+            border: 2px solid var(--red);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .premium-banner:hover {
+            transform: scale(1.02);
+        }
+        
+        .premium-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 24px;
+            color: var(--black);
+            margin-bottom: 10px;
+        }
+        
+        .premium-price {
+            font-size: 14px;
+            color: var(--black);
+            opacity: 0.8;
+        }
+        
+        .premium-features {
+            margin: 20px 0;
+        }
+        
+        .premium-feature {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        
+        /* Merch Section */
+        .merch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .merch-item {
+            border: 2px solid var(--gray);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .merch-item:hover {
+            border-color: var(--red);
+        }
+        
+        .merch-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .merch-price {
+            font-size: 12px;
+            color: var(--light-gray);
+        }
+        
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--black);
+            border-top: 2px solid var(--red);
+            display: flex;
+            padding: 10px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            color: var(--light-gray);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn.active {
+            color: var(--red);
+        }
+        
+        .content-wrapper {
+            padding-bottom: 80px;
+        }
+        
+        /* Notification Permission */
+        .permission-box {
+            background: var(--gray);
+            border: 2px solid var(--red);
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .permission-icon {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        
+        .permission-text {
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Onboarding Screen 1: Activity -->
+        <div id="screen-activity" class="screen active">
+            <div class="header">
+                <div class="logo">Y NOT RUN</div>
+                <div class="tagline">STOP MAKING EXCUSES</div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">What are you NOT doing?</div>
+                <div class="activity-grid">
+                    <button class="activity-btn" data-activity="run">RUN</button>
+                    <button class="activity-btn" data-activity="lift">LIFT</button>
+                    <button class="activity-btn" data-activity="swim">SWIM</button>
+                    <button class="activity-btn" data-activity="bike">BIKE</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-continue-activity" disabled>CONTINUE</button>
+        </div>
+        
+        <!-- Onboarding Screen 2: Frequency -->
+        <div id="screen-frequency" class="screen">
+            <div class="header">
+                <div class="logo">Y NOT RUN</div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">How often should you be doing this?</div>
+                <div class="frequency-options">
+                    <button class="frequency-btn" data-frequency="3">3x/week</button>
+                    <button class="frequency-btn" data-frequency="5">5x/week</button>
+                    <button class="frequency-btn" data-frequency="7">Daily</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-continue-frequency" disabled>CONTINUE</button>
+            <button class="btn" id="btn-back-frequency">BACK</button>
+        </div>
+        
+        <!-- Onboarding Screen 3: Intensity -->
+        <div id="screen-intensity" class="screen">
+            <div class="header">
+                <div class="logo">Y NOT RUN</div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">How aggressive should we be?</div>
+                <div class="intensity-slider">
+                    <div class="intensity-option" data-intensity="chill">
+                        <div class="intensity-title">CHILL</div>
+                        <div class="intensity-desc">Friendly reminders, 2x per day</div>
+                    </div>
+                    <div class="intensity-option" data-intensity="real">
+                        <div class="intensity-title">REAL</div>
+                        <div class="intensity-desc">Direct callouts, 3x per day</div>
+                    </div>
+                    <div class="intensity-option" data-intensity="brutal">
+                        <div class="intensity-title">BRUTAL</div>
+                        <div class="intensity-desc">No mercy, constant pressure (Premium)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-continue-intensity" disabled>CONTINUE</button>
+            <button class="btn" id="btn-back-intensity">BACK</button>
+        </div>
+        
+        <!-- Notification Permission Screen -->
+        <div id="screen-permission" class="screen">
+            <div class="header">
+                <div class="logo">Y NOT RUN</div>
+            </div>
+            
+            <div class="permission-box">
+                <div class="permission-icon">🔔</div>
+                <div class="permission-text">
+                    We need permission to call you out when you're slacking.
+                    <br><br>
+                    Enable notifications or this app is completely useless.
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-enable-notifications">ENABLE NOTIFICATIONS</button>
+            <button class="btn" id="btn-skip-notifications">SKIP (NOT RECOMMENDED)</button>
+        </div>
+        
+        <!-- Home Screen -->
+        <div id="screen-home" class="screen">
+            <div class="content-wrapper">
+                <div class="header">
+                    <div class="logo">Y NOT RUN</div>
+                    <div class="tagline">STOP MAKING EXCUSES</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">CURRENT STREAK</div>
+                    <div class="stat-number" id="streak-count">0</div>
+                    <div class="stat-label">DAYS</div>
+                </div>
+                
+                <div class="form-label">THIS WEEK</div>
+                <div class="week-grid" id="week-grid">
+                    <div class="day-box">M</div>
+                    <div class="day-box">T</div>
+                    <div class="day-box">W</div>
+                    <div class="day-box">T</div>
+                    <div class="day-box">F</div>
+                    <div class="day-box">S</div>
+                    <div class="day-box">S</div>
+                </div>
+                
+                <div class="excuse-list" id="excuse-list">
+                    <div class="excuse-title">YOUR EXCUSES THIS WEEK</div>
+                    <div class="excuse-item">No excuses yet. Good.</div>
+                </div>
+                
+                <button class="btn btn-primary" id="btn-log-workout">I DID IT TODAY</button>
+                <button class="btn" id="btn-skip-today">SKIP TODAY</button>
+            </div>
+            
+            <div class="nav-bar">
+                <button class="nav-btn active" data-screen="home">HOME</button>
+                <button class="nav-btn" data-screen="premium">PREMIUM</button>
+                <button class="nav-btn" data-screen="merch">MERCH</button>
+            </div>
+        </div>
+        
+        <!-- Premium Screen -->
+        <div id="screen-premium" class="screen">
+            <div class="content-wrapper">
+                <div class="header">
+                    <div class="logo">PREMIUM</div>
+                    <div class="tagline">UNLOCK HARDCORE MODE</div>
+                </div>
+                
+                <div class="premium-banner">
+                    <div class="premium-title">GO PREMIUM</div>
+                    <div class="premium-price">$2.99/MONTH</div>
+                </div>
+                
+                <div class="premium-features">
+                    <div class="premium-feature">
+                        <strong>BRUTAL MODE</strong><br>
+                        Constant notifications. No mercy. Maximum pressure.
+                    </div>
+                    <div class="premium-feature">
+                        <strong>ACCOUNTABILITY PARTNER</strong><br>
+                        Connect with a friend. Both get called out if either skips.
+                    </div>
+                    <div class="premium-feature">
+                        <strong>PROOF MODE</strong><br>
+                        Upload sweaty selfie or screenshot to verify workout.
+                    </div>
+                    <div class="premium-feature">
+                        <strong>STREAK PROTECTION</strong><br>
+                        One skip pass per week. Don't waste it.
+                    </div>
+                    <div class="premium-feature">
+                        <strong>CUSTOM TIMES</strong><br>
+                        Set exactly when you want to be reminded.
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="btn-upgrade">UPGRADE NOW</button>
+            </div>
+            
+            <div class="nav-bar">
+                <button class="nav-btn" data-screen="home">HOME</button>
+                <button class="nav-btn active" data-screen="premium">PREMIUM</button>
+                <button class="nav-btn" data-screen="merch">MERCH</button>
+            </div>
+        </div>
+        
+        <!-- Merch Screen -->
+        <div id="screen-merch" class="screen">
+            <div class="content-wrapper">
+                <div class="header">
+                    <div class="logo">MERCH</div>
+                    <div class="tagline">REP YOUR COMMITMENT</div>
+                </div>
+                
+                <div class="merch-grid">
+                    <div class="merch-item">
+                        <div class="merch-name">Y NOT RUN<br>TEE</div>
+                        <div class="merch-price">$28</div>
+                    </div>
+                    <div class="merch-item">
+                        <div class="merch-name">Y NOT RUN<br>HOODIE</div>
+                        <div class="merch-price">$48</div>
+                    </div>
+                    <div class="merch-item">
+                        <div class="merch-name">Y NOT RUN<br>HAT</div>
+                        <div class="merch-price">$24</div>
+                    </div>
+                    <div class="merch-item">
+                        <div class="merch-name">NO EXCUSES<br>TEE</div>
+                        <div class="merch-price">$28</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="alert('Merch store coming soon! Set up your Printful/Shopify integration here.')">SHOP NOW</button>
+                
+                <div class="excuse-list" style="margin-top: 30px;">
+                    <div class="excuse-title">EARN DISCOUNTS</div>
+                    <div class="excuse-item">30-day streak = 20% off</div>
+                    <div class="excuse-item">60-day streak = 30% off</div>
+                    <div class="excuse-item">90-day streak = 40% off</div>
+                </div>
+            </div>
+            
+            <div class="nav-bar">
+                <button class="nav-btn" data-screen="home">HOME</button>
+                <button class="nav-btn" data-screen="premium">PREMIUM</button>
+                <button class="nav-btn active" data-screen="merch">MERCH</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Stripe Configuration
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SpfUd01Os349EHZWu6CmJlZaPaM17Ai4bBXB1PcRCnfSDkYxlA1PIPIrU2dtgDCCQ70Fi5ZJFmRzAX8hISJPkfo009tOf2Rrz';
+        const PRICE_ID = 'price_1Spfi701Os349EHZDvmu4h9D';
+        const PAYMENT_LINK = 'https://buy.stripe.com/test_4gM5kvgG73mvfKr4A4eQM00';
+        let stripe = null;
+        
+        // Initialize Stripe when ready
+        if (typeof Stripe !== 'undefined') {
+            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        }
+        
+        // IMPORTANT: In Stripe Dashboard, edit your Payment Link and set:
+        // Success URL: https://yourdomain.com/?success=true
+        // (Replace yourdomain.com with your actual domain after deploying)
+        
+        // App State
+        let appState = {
+            activity: null,
+            frequency: null,
+            intensity: null,
+            streak: 0,
+            weekData: [false, false, false, false, false, false, false],
+            excuses: [],
+            lastWorkout: null,
+            notificationsEnabled: false,
+            isPremium: false
+        };
+        
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('ynotrun_state');
+            if (saved) {
+                appState = { ...appState, ...JSON.parse(saved) };
+                updateHomeScreen();
+            }
+        }
+        
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('ynotrun_state', JSON.stringify(appState));
+        }
+        
+        // Screen Management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${screenId}`).classList.add('active');
+            
+            // Update nav
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.screen === screenId);
+            });
+        }
+        
+        // Onboarding: Activity Selection
+        document.querySelectorAll('.activity-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                appState.activity = btn.dataset.activity;
+                document.getElementById('btn-continue-activity').disabled = false;
+            });
+        });
+        
+        document.getElementById('btn-continue-activity').addEventListener('click', () => {
+            showScreen('frequency');
+        });
+        
+        // Onboarding: Frequency Selection
+        document.querySelectorAll('.frequency-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.frequency-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                appState.frequency = parseInt(btn.dataset.frequency);
+                document.getElementById('btn-continue-frequency').disabled = false;
+            });
+        });
+        
+        document.getElementById('btn-continue-frequency').addEventListener('click', () => {
+            showScreen('intensity');
+        });
+        
+        document.getElementById('btn-back-frequency').addEventListener('click', () => {
+            showScreen('activity');
+        });
+        
+        // Onboarding: Intensity Selection
+        document.querySelectorAll('.intensity-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const intensity = btn.dataset.intensity;
+                
+                if (intensity === 'brutal' && !appState.isPremium) {
+                    alert('BRUTAL mode requires premium. Upgrade to unlock maximum pressure.');
+                    return;
+                }
+                
+                document.querySelectorAll('.intensity-option').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                appState.intensity = intensity;
+                document.getElementById('btn-continue-intensity').disabled = false;
+            });
+        });
+        
+        document.getElementById('btn-continue-intensity').addEventListener('click', () => {
+            showScreen('permission');
+        });
+        
+        document.getElementById('btn-back-intensity').addEventListener('click', () => {
+            showScreen('frequency');
+        });
+        
+        // Notification Permission
+        document.getElementById('btn-enable-notifications').addEventListener('click', async () => {
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                appState.notificationsEnabled = (permission === 'granted');
+                
+                if (appState.notificationsEnabled) {
+                    scheduleNotifications();
+                    alert('Notifications enabled. No more excuses.');
+                } else {
+                    alert('You denied notifications. This app is now pretty much useless.');
+                }
+            }
+            saveState();
+            showScreen('home');
+        });
+        
+        document.getElementById('btn-skip-notifications').addEventListener('click', () => {
+            alert('Fine. But don\'t blame us when you skip every workout.');
+            showScreen('home');
+        });
+        
+        // Schedule Notifications (mock implementation - needs actual notification scheduling)
+        function scheduleNotifications() {
+            // In a real app, you'd use the Notifications API and service workers
+            // This is a placeholder
+            console.log('Notifications scheduled based on intensity:', appState.intensity);
+            
+            // Example notification
+            if (appState.notificationsEnabled) {
+                setTimeout(() => {
+                    new Notification('Y NOT RUN', {
+                        body: 'Why aren\'t you running right now?',
+                        icon: '🏃',
+                        requireInteraction: true
+                    });
+                }, 5000); // Demo notification after 5 seconds
+            }
+        }
+        
+        // Home Screen Actions
+        document.getElementById('btn-log-workout').addEventListener('click', () => {
+            const today = new Date().getDay();
+            const dayIndex = today === 0 ? 6 : today - 1; // Convert Sunday=0 to index 6
+            
+            if (!appState.weekData[dayIndex]) {
+                appState.weekData[dayIndex] = true;
+                appState.streak++;
+                appState.lastWorkout = new Date().toISOString();
+                saveState();
+                updateHomeScreen();
+                alert('GOOD. Keep it up.');
+            } else {
+                alert('You already logged today. Don\'t lie.');
+            }
+        });
+        
+        document.getElementById('btn-skip-today').addEventListener('click', () => {
+            const excuse = prompt('Why are you skipping? Be honest:');
+            if (excuse) {
+                appState.excuses.push({
+                    date: new Date().toLocaleDateString(),
+                    reason: excuse
+                });
+                appState.streak = 0; // Break streak
+                saveState();
+                updateHomeScreen();
+                alert('Pathetic. Your excuse has been recorded.');
+            }
+        });
+        
+        // Update Home Screen
+        function updateHomeScreen() {
+            // Update streak
+            document.getElementById('streak-count').textContent = appState.streak;
+            
+            // Update week grid
+            const weekGrid = document.getElementById('week-grid');
+            const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+            weekGrid.innerHTML = appState.weekData.map((completed, i) => {
+                const className = completed ? 'completed' : '';
+                return `<div class="day-box ${className}">${days[i]}</div>`;
+            }).join('');
+            
+            // Update excuses
+            const excuseList = document.getElementById('excuse-list');
+            if (appState.excuses.length === 0) {
+                excuseList.innerHTML = '<div class="excuse-title">YOUR EXCUSES THIS WEEK</div><div class="excuse-item">No excuses yet. Good.</div>';
+            } else {
+                const excuseItems = appState.excuses.slice(-5).reverse().map(e => 
+                    `<div class="excuse-item">${e.date}: ${e.reason}</div>`
+                ).join('');
+                excuseList.innerHTML = `<div class="excuse-title">YOUR PATHETIC EXCUSES</div>${excuseItems}`;
+            }
+        }
+        
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showScreen(btn.dataset.screen);
+            });
+        });
+        
+        // Premium Upgrade - Real Stripe Integration
+        document.getElementById('btn-upgrade').addEventListener('click', () => {
+            // Redirect to Stripe Payment Link
+            window.location.href = PAYMENT_LINK + '?client_reference_id=' + Date.now();
+        });
+        
+        // Initialize
+        loadState();
+        
+        // Check if returning from successful payment
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true' || urlParams.get('session_id')) {
+            appState.isPremium = true;
+            saveState();
+            alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nAccountability partners unlocked.\nProof mode unlocked.\nStreak protection unlocked.\n\nNo more excuses.');
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        // Check if onboarding is complete
+        if (appState.activity && appState.frequency && appState.intensity) {
+            showScreen('home');
+        }
+        
+        // Reset week data every Monday
+        function checkWeekReset() {
+            const lastReset = localStorage.getItem('ynotrun_last_reset');
+            const now = new Date();
+            const currentMonday = new Date(now.setDate(now.getDate() - now.getDay() + 1)).toDateString();
+            
+            if (lastReset !== currentMonday) {
+                appState.weekData = [false, false, false, false, false, false, false];
+                localStorage.setItem('ynotrun_last_reset', currentMonday);
+                saveState();
+            }
+        }
+        
+        checkWeekReset();
+    </script>
+</body>
+</html>
