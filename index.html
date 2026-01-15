@@ -1071,26 +1071,21 @@
             appState.isPremium = true;
             saveState();
             
-            // If already onboarded, go to home
-            if (appState.activity && appState.frequency && appState.intensity) {
-                showScreen('home');
-                setTimeout(() => {
-                    alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nAccountability partners unlocked.\nProof mode unlocked.\nStreak protection unlocked.\n\nNo more excuses.');
-                }, 500);
-            } else {
-                alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nAccountability partners unlocked.\nProof mode unlocked.\nStreak protection unlocked.\n\nNo more excuses.');
-            }
-            
-            // Clean URL
+            // Clean URL first
             window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Show alert
+            alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nStreak protection unlocked.\nCustom times unlocked.\nAd-free experience.\n\nNo more excuses.');
         }
         
         // Update premium status on load
         updatePremiumStatus();
         
-        // Check if onboarding is complete
+        // Check if onboarding is complete and show appropriate screen
         if (appState.activity && appState.frequency && appState.intensity) {
             showScreen('home');
+        } else {
+            showScreen('activity');
         }
         
         // Reset week data every Monday
