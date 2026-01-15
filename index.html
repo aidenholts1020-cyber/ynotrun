@@ -502,6 +502,11 @@
                 <div class="logo">Y NOT RUN</div>
             </div>
             
+            <div class="form-group">
+                <div class="form-label">Email (Optional - for updates only)</div>
+                <input type="email" id="user-email" placeholder="your@email.com" style="width: 100%; padding: 15px; background: var(--gray); border: 2px solid var(--gray); color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 14px; margin-bottom: 20px;">
+            </div>
+            
             <div class="permission-box">
                 <div class="permission-icon">🔔</div>
                 <div class="permission-text">
@@ -520,7 +525,7 @@
             <div class="content-wrapper">
                 <div class="header">
                     <div class="logo">Y NOT RUN</div>
-                    <div class="tagline">STOP MAKING EXCUSES</div>
+                    <div class="tagline" id="home-tagline">STOP MAKING EXCUSES</div>
                 </div>
                 
                 <div class="stat-card">
@@ -674,7 +679,8 @@
             excuses: [],
             lastWorkout: null,
             notificationsEnabled: false,
-            isPremium: false
+            isPremium: false,
+            email: null
         };
         
         // Load state from localStorage
@@ -761,6 +767,12 @@
         
         // Notification Permission
         document.getElementById('btn-enable-notifications').addEventListener('click', async () => {
+            // Save email if provided
+            const emailInput = document.getElementById('user-email');
+            if (emailInput && emailInput.value) {
+                appState.email = emailInput.value;
+            }
+            
             if ('Notification' in window) {
                 const permission = await Notification.requestPermission();
                 appState.notificationsEnabled = (permission === 'granted');
@@ -777,6 +789,12 @@
         });
         
         document.getElementById('btn-skip-notifications').addEventListener('click', () => {
+            // Save email if provided even if skipping notifications
+            const emailInput = document.getElementById('user-email');
+            if (emailInput && emailInput.value) {
+                appState.email = emailInput.value;
+                saveState();
+            }
             alert('Fine. But don\'t blame us when you skip every workout.');
             showScreen('home');
         });
@@ -862,13 +880,20 @@
         function updatePremiumStatus() {
             const premiumBanner = document.querySelector('.premium-banner');
             const upgradeBtn = document.getElementById('btn-upgrade');
+            const homeTagline = document.getElementById('home-tagline');
             
             if (appState.isPremium) {
                 // Hide upgrade banner and button
                 if (premiumBanner) premiumBanner.style.display = 'none';
                 if (upgradeBtn) upgradeBtn.style.display = 'none';
                 
-                // Show premium active message
+                // Update home screen tagline to show premium status
+                if (homeTagline) {
+                    homeTagline.innerHTML = 'PREMIUM ACTIVE';
+                    homeTagline.style.color = 'var(--red)';
+                }
+                
+                // Show premium active message on premium screen
                 const premiumScreen = document.getElementById('screen-premium');
                 const contentWrapper = premiumScreen.querySelector('.content-wrapper');
                 if (!document.getElementById('premium-active-message')) {
@@ -907,7 +932,17 @@
         if (urlParams.get('success') === 'true' || urlParams.get('session_id')) {
             appState.isPremium = true;
             saveState();
-            alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nAccountability partners unlocked.\nProof mode unlocked.\nStreak protection unlocked.\n\nNo more excuses.');
+            
+            // If already onboarded, go to home
+            if (appState.activity && appState.frequency && appState.intensity) {
+                showScreen('home');
+                setTimeout(() => {
+                    alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nAccountability partners unlocked.\nProof mode unlocked.\nStreak protection unlocked.\n\nNo more excuses.');
+                }, 500);
+            } else {
+                alert('PREMIUM ACTIVATED!\n\nBrutal mode unlocked.\nAccountability partners unlocked.\nProof mode unlocked.\nStreak protection unlocked.\n\nNo more excuses.');
+            }
+            
             // Clean URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
