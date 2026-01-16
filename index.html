@@ -334,36 +334,93 @@
         
         .premium-feature {
             padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(51, 51, 51, 0.8);
             margin: 10px 0;
             font-size: 12px;
-            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
         }
         
-        .premium-feature.locked {
-            opacity: 0.5;
+        .premium-feature-content {
+            flex: 1;
         }
         
-        .premium-feature.locked::after {
-            content: '🔒 LOCKED';
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
+        .premium-feature-status {
             font-size: 11px;
-            color: var(--red);
             font-weight: 700;
+            white-space: nowrap;
+            padding-top: 2px;
         }
         
-        .premium-feature.unlocked::after {
-            content: '✓ UNLOCKED';
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            font-size: 11px;
+        .premium-feature.locked .premium-feature-status {
+            color: var(--light-gray);
+        }
+        
+        .premium-feature.unlocked .premium-feature-status {
             color: var(--red);
+        }
+        
+        /* Custom Times Settings for Premium */
+        .custom-times-section {
+            background: var(--gray);
+            border: 2px solid var(--red);
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .custom-times-section.visible {
+            display: block;
+        }
+        
+        .custom-times-title {
+            font-size: 14px;
             font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--red);
+        }
+        
+        .custom-times-current {
+            font-size: 12px;
+            color: var(--light-gray);
+            margin-bottom: 15px;
+        }
+        
+        .time-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .time-slot {
+            padding: 10px 5px;
+            border: 2px solid var(--gray);
+            background: transparent;
+            color: var(--white);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .time-slot:hover {
+            border-color: var(--red);
+        }
+        
+        .time-slot.selected {
+            border-color: var(--red);
+            background: var(--red);
+            color: var(--black);
+        }
+        
+        .time-slot:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
         
         /* Merch Section */
@@ -601,31 +658,51 @@
                     <div class="tagline">UNLOCK HARDCORE MODE</div>
                 </div>
                 
-                <div class="premium-banner">
+                <div class="premium-banner" id="premium-banner">
                     <div class="premium-title">GO PREMIUM</div>
                     <div class="premium-price">$2.99/MONTH</div>
                 </div>
                 
                 <div class="premium-features" id="premium-features-list">
                     <div class="premium-feature" data-feature="brutal">
-                        <strong>BRUTAL MODE</strong><br>
-                        8 notifications per day. Aggressive messaging. Maximum pressure.
+                        <div class="premium-feature-content">
+                            <strong>BRUTAL MODE</strong><br>
+                            8 notifications per day. Aggressive messaging. Maximum pressure.
+                        </div>
+                        <div class="premium-feature-status">🔒 LOCKED</div>
                     </div>
                     <div class="premium-feature" data-feature="streak">
-                        <strong>STREAK PROTECTION</strong><br>
-                        One free skip pass per week. Protect your streak.
+                        <div class="premium-feature-content">
+                            <strong>STREAK PROTECTION</strong><br>
+                            One free skip pass per week. Protect your streak.
+                        </div>
+                        <div class="premium-feature-status">🔒 LOCKED</div>
                     </div>
                     <div class="premium-feature" data-feature="custom">
-                        <strong>CUSTOM TIMES</strong><br>
-                        Set exactly when you want notifications. Your schedule.
+                        <div class="premium-feature-content">
+                            <strong>CUSTOM TIMES</strong><br>
+                            Set exactly when you want notifications. Your schedule.
+                        </div>
+                        <div class="premium-feature-status">🔒 LOCKED</div>
                     </div>
                     <div class="premium-feature" data-feature="adfree">
-                        <strong>AD-FREE</strong><br>
-                        No upgrade prompts. Clean experience.
+                        <div class="premium-feature-content">
+                            <strong>AD-FREE</strong><br>
+                            No upgrade prompts. Clean experience.
+                        </div>
+                        <div class="premium-feature-status">🔒 LOCKED</div>
                     </div>
                 </div>
                 
-                <button class="btn" id="btn-settings" style="display: none;">NOTIFICATION SETTINGS</button>
+                <!-- Custom Times Section (Premium Only) -->
+                <div class="custom-times-section" id="custom-times-section">
+                    <div class="custom-times-title">📅 SET YOUR NOTIFICATION TIMES</div>
+                    <div class="custom-times-current" id="current-times-display">Select up to 8 times for daily notifications</div>
+                    <div class="time-picker-grid" id="time-picker-grid">
+                        <!-- Will be populated by JS -->
+                    </div>
+                    <button class="btn btn-primary btn-small" id="btn-save-times">SAVE TIMES</button>
+                </div>
                 
                 <button class="btn btn-primary" id="btn-upgrade">UPGRADE NOW</button>
             </div>
@@ -686,7 +763,7 @@
     <script type="module">
         // Firebase Cloud Messaging Setup
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
+        import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
      
         const firebaseConfig = {
           apiKey: "AIzaSyDNQtNS2I67kPOIRMVN2NB_qqY3X9lqf_k",
@@ -730,10 +807,6 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
             stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         }
         
-        // IMPORTANT: In Stripe Dashboard, edit your Payment Link and set:
-        // Success URL: https://yourdomain.com/?success=true
-        // (Replace yourdomain.com with your actual domain after deploying)
-        
         // App State
         let appState = {
             activity: null,
@@ -748,8 +821,8 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
             email: null,
             skipPassesUsed: 0,
             lastSkipPassReset: null,
-            customNotificationTimes: [], // Premium feature: custom notification times
-            fcmToken: null // Firebase Cloud Messaging token
+            customNotificationTimes: [],
+            fcmToken: null
         };
         
         // Load state from localStorage
@@ -852,6 +925,10 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
                         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
                         console.log('Service Worker registered:', registration);
                         
+                        // FIXED: Wait for service worker to be ready
+                        await navigator.serviceWorker.ready;
+                        console.log('Service Worker ready');
+                        
                         // Get FCM token
                         if (window.firebaseMessaging && window.firebaseGetToken) {
                             const token = await window.firebaseGetToken(window.firebaseMessaging, {
@@ -863,7 +940,7 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
                                 console.log('FCM Token:', token);
                                 appState.fcmToken = token;
                                 
-                                // Schedule notifications via our backend (we'll build this next)
+                                // Schedule notifications via our backend
                                 scheduleNotifications();
                                 alert('Notifications enabled. No more excuses.');
                             } else {
@@ -949,7 +1026,7 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
         // Home Screen Actions
         document.getElementById('btn-log-workout').addEventListener('click', () => {
             const today = new Date().getDay();
-            const dayIndex = today === 0 ? 6 : today - 1; // Convert Sunday=0 to index 6
+            const dayIndex = today === 0 ? 6 : today - 1;
             
             if (!appState.weekData[dayIndex]) {
                 appState.weekData[dayIndex] = true;
@@ -987,7 +1064,7 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
                     date: new Date().toLocaleDateString(),
                     reason: excuse
                 });
-                appState.streak = 0; // Break streak
+                appState.streak = 0;
                 saveState();
                 updateHomeScreen();
                 alert('Pathetic. Your excuse has been recorded.');
@@ -1022,14 +1099,85 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
             updatePremiumStatus();
         }
         
+        // Initialize Time Picker
+        function initTimePicker() {
+            const grid = document.getElementById('time-picker-grid');
+            grid.innerHTML = '';
+            
+            // Create time slots from 6am to 10pm
+            for (let hour = 6; hour <= 22; hour++) {
+                const btn = document.createElement('button');
+                btn.className = 'time-slot';
+                btn.dataset.hour = hour;
+                btn.textContent = `${hour > 12 ? hour - 12 : hour}${hour >= 12 ? 'pm' : 'am'}`;
+                
+                if (appState.customNotificationTimes.includes(hour)) {
+                    btn.classList.add('selected');
+                }
+                
+                btn.addEventListener('click', () => {
+                    toggleTimeSlot(hour, btn);
+                });
+                
+                grid.appendChild(btn);
+            }
+            
+            updateCurrentTimesDisplay();
+        }
+        
+        function toggleTimeSlot(hour, btn) {
+            const index = appState.customNotificationTimes.indexOf(hour);
+            
+            if (index > -1) {
+                // Remove time
+                appState.customNotificationTimes.splice(index, 1);
+                btn.classList.remove('selected');
+            } else {
+                // Add time (max 8)
+                if (appState.customNotificationTimes.length >= 8) {
+                    alert('Maximum 8 notification times allowed.');
+                    return;
+                }
+                appState.customNotificationTimes.push(hour);
+                appState.customNotificationTimes.sort((a, b) => a - b);
+                btn.classList.add('selected');
+            }
+            
+            updateCurrentTimesDisplay();
+        }
+        
+        function updateCurrentTimesDisplay() {
+            const display = document.getElementById('current-times-display');
+            if (appState.customNotificationTimes.length === 0) {
+                display.textContent = 'Select up to 8 times for daily notifications';
+            } else {
+                const timeStrings = appState.customNotificationTimes.map(h => 
+                    `${h > 12 ? h - 12 : h}${h >= 12 ? 'pm' : 'am'}`
+                );
+                display.textContent = `Selected: ${timeStrings.join(', ')}`;
+            }
+        }
+        
+        // Save custom times
+        document.getElementById('btn-save-times').addEventListener('click', () => {
+            if (appState.customNotificationTimes.length === 0) {
+                alert('Please select at least one notification time.');
+                return;
+            }
+            
+            saveState();
+            scheduleNotifications();
+            alert(`Notification times saved!\n\nYou'll be notified at:\n${appState.customNotificationTimes.map(h => `${h > 12 ? h - 12 : h}:00${h >= 12 ? 'pm' : 'am'}`).join(', ')}`);
+        });
+        
         // Update Premium Status Display
         function updatePremiumStatus() {
-            const premiumBanner = document.querySelector('.premium-banner');
+            const premiumBanner = document.getElementById('premium-banner');
             const upgradeBtn = document.getElementById('btn-upgrade');
-            const settingsBtn = document.getElementById('btn-settings');
             const homeTagline = document.getElementById('home-tagline');
             const premiumFeatures = document.querySelectorAll('.premium-feature');
             const freeUserPrompt = document.getElementById('free-user-prompt');
+            const customTimesSection = document.getElementById('custom-times-section');
             
             if (appState.isPremium) {
                 // Hide upgrade banner and button
@@ -1037,8 +1185,11 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
                 if (upgradeBtn) upgradeBtn.style.display = 'none';
                 if (freeUserPrompt) freeUserPrompt.style.display = 'none';
                 
-                // Show settings button for premium users
-                if (settingsBtn) settingsBtn.style.display = 'block';
+                // Show custom times section
+                if (customTimesSection) {
+                    customTimesSection.classList.add('visible');
+                    initTimePicker();
+                }
                 
                 // Update home screen tagline to show premium status
                 if (homeTagline) {
@@ -1050,6 +1201,10 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
                 premiumFeatures.forEach(feature => {
                     feature.classList.remove('locked');
                     feature.classList.add('unlocked');
+                    const statusEl = feature.querySelector('.premium-feature-status');
+                    if (statusEl) {
+                        statusEl.textContent = '✓ UNLOCKED';
+                    }
                 });
                 
                 // Show premium active message on premium screen
@@ -1071,10 +1226,19 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
                 // Show upgrade prompt for free users
                 if (freeUserPrompt) freeUserPrompt.style.display = 'block';
                 
+                // Hide custom times section
+                if (customTimesSection) {
+                    customTimesSection.classList.remove('visible');
+                }
+                
                 // Show all features as locked for free users
                 premiumFeatures.forEach(feature => {
                     feature.classList.add('locked');
                     feature.classList.remove('unlocked');
+                    const statusEl = feature.querySelector('.premium-feature-status');
+                    if (statusEl) {
+                        statusEl.textContent = '🔒 LOCKED';
+                    }
                 });
             }
         }
@@ -1088,44 +1252,7 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
         
         // Premium Upgrade - Real Stripe Integration
         document.getElementById('btn-upgrade').addEventListener('click', () => {
-            // Redirect to Stripe Payment Link
             window.location.href = PAYMENT_LINK + '?client_reference_id=' + Date.now();
-        });
-        
-        // Premium Settings - Custom Notification Times
-        document.getElementById('btn-settings').addEventListener('click', () => {
-            if (!appState.isPremium) {
-                alert('This feature requires premium.');
-                return;
-            }
-            
-            const currentTimes = appState.customNotificationTimes.length > 0 
-                ? appState.customNotificationTimes.join(', ') 
-                : 'Using default times';
-            
-            const input = prompt(
-                `CUSTOM NOTIFICATION TIMES\n\n` +
-                `Current: ${currentTimes}\n\n` +
-                `Enter times in 24-hour format, separated by commas.\n` +
-                `Example: 9, 13, 18 (for 9am, 1pm, 6pm)\n\n` +
-                `Enter times:`
-            );
-            
-            if (input) {
-                const times = input.split(',').map(t => parseInt(t.trim())).filter(t => t >= 0 && t <= 23);
-                
-                if (times.length > 0) {
-                    appState.customNotificationTimes = times.sort((a, b) => a - b);
-                    saveState();
-                    
-                    // Update backend with new times
-                    scheduleNotifications();
-                    
-                    alert(`Notification times updated:\n${times.map(t => `${t}:00`).join(', ')}`);
-                } else {
-                    alert('Invalid input. Please enter hours between 0-23.');
-                }
-            }
         });
         
         // Initialize
@@ -1162,7 +1289,7 @@ import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/fireb
             
             if (lastReset !== currentMonday) {
                 appState.weekData = [false, false, false, false, false, false, false];
-                appState.skipPassesUsed = 0; // Reset skip passes
+                appState.skipPassesUsed = 0;
                 appState.lastSkipPassReset = currentMonday;
                 localStorage.setItem('ynotrun_last_reset', currentMonday);
                 saveState();
