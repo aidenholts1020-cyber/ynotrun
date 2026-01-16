@@ -1,554 +1,1028 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Y NOT RUN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --black: #0a0a0a;
-            --red: #ff0000;
-            --dark-red: #cc0000;
-            --white: #ffffff;
-            --gray: #333333;
-            --light-gray: #666666;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto Mono', monospace; background: var(--black); color: var(--white); min-height: 100vh; overflow-x: hidden; }
-        .container { max-width: 480px; margin: 0 auto; padding: 20px; min-height: 100vh; }
-        .screen { display: none; animation: fadeIn 0.3s ease-in; }
-        .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .header { text-align: center; padding: 40px 0; border-bottom: 2px solid var(--red); margin-bottom: 40px; }
-        .header-small { padding: 20px 0; margin-bottom: 20px; }
-        .logo { font-family: 'Anton', sans-serif; font-size: 48px; letter-spacing: 4px; color: var(--red); text-shadow: 3px 3px 0px rgba(255, 0, 0, 0.3); animation: pulse 2s ease-in-out infinite; }
-        .logo-small { font-size: 32px; animation: none; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-        .tagline { font-size: 12px; color: var(--light-gray); margin-top: 10px; letter-spacing: 2px; }
-        .btn { width: 100%; padding: 18px; font-family: 'Roboto Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border: 2px solid var(--red); background: transparent; color: var(--red); cursor: pointer; transition: all 0.2s; margin: 10px 0; }
-        .btn:hover { background: var(--red); color: var(--black); transform: translateY(-2px); }
-        .btn-primary { background: var(--red); color: var(--black); }
-        .btn-primary:hover { background: var(--dark-red); border-color: var(--dark-red); }
-        .btn-small { padding: 12px; font-size: 12px; }
-        .btn-danger { border-color: var(--light-gray); color: var(--light-gray); }
-        .btn-danger:hover { background: var(--light-gray); color: var(--black); }
-        .form-group { margin: 30px 0; }
-        .form-label { display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-gray); margin-bottom: 15px; }
-        .activity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .activity-btn { padding: 30px 20px; border: 2px solid var(--gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 16px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
-        .activity-btn:hover { border-color: var(--red); }
-        .activity-btn.selected { border-color: var(--red); background: var(--red); color: var(--black); }
-        .frequency-options { display: flex; gap: 10px; }
-        .frequency-btn { flex: 1; padding: 20px; border: 2px solid var(--gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 14px; cursor: pointer; transition: all 0.2s; }
-        .frequency-btn:hover { border-color: var(--red); }
-        .frequency-btn.selected { border-color: var(--red); background: var(--red); color: var(--black); }
-        .intensity-slider { display: flex; flex-direction: column; gap: 10px; }
-        .intensity-option { padding: 20px; border: 2px solid var(--gray); background: transparent; color: var(--white); cursor: pointer; transition: all 0.2s; }
-        .intensity-option:hover { border-color: var(--red); }
-        .intensity-option.selected { border-color: var(--red); background: var(--red); color: var(--black); }
-        .intensity-title { font-size: 16px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
-        .intensity-desc { font-size: 11px; opacity: 0.7; }
-        .stat-card { background: var(--gray); border: 2px solid var(--red); padding: 30px; margin: 20px 0; text-align: center; }
-        .stat-number { font-family: 'Anton', sans-serif; font-size: 72px; color: var(--red); line-height: 1; margin: 10px 0; }
-        .stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-gray); }
-        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 20px 0; }
-        .day-box { aspect-ratio: 1; border: 2px solid var(--gray); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
-        .day-box.completed { background: var(--red); border-color: var(--red); color: var(--black); }
-        .excuse-list { background: var(--gray); padding: 20px; margin: 20px 0; }
-        .excuse-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-gray); margin-bottom: 15px; }
-        .excuse-item { padding: 10px 0; border-bottom: 1px solid var(--light-gray); font-size: 12px; }
-        .excuse-item:last-child { border-bottom: none; }
-        .premium-banner { background: linear-gradient(135deg, var(--red) 0%, var(--dark-red) 100%); padding: 25px; margin: 30px 0; border: 2px solid var(--red); cursor: pointer; transition: transform 0.2s; }
-        .premium-banner:hover { transform: scale(1.02); }
-        .premium-title { font-family: 'Anton', sans-serif; font-size: 24px; color: var(--black); margin-bottom: 10px; }
-        .premium-price { font-size: 14px; color: var(--black); opacity: 0.8; }
-        .premium-features { margin: 20px 0; }
-        .premium-feature { padding: 15px; background: rgba(51, 51, 51, 0.8); margin: 10px 0; font-size: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
-        .premium-feature-content { flex: 1; }
-        .premium-feature-status { font-size: 11px; font-weight: 700; white-space: nowrap; padding-top: 2px; }
-        .premium-feature.locked .premium-feature-status { color: var(--light-gray); }
-        .premium-feature.unlocked .premium-feature-status { color: var(--red); }
-        .custom-times-section { background: var(--gray); border: 2px solid var(--red); padding: 20px; margin: 20px 0; display: none; }
-        .custom-times-section.visible { display: block; }
-        .custom-times-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; color: var(--red); }
-        .custom-times-current { font-size: 12px; color: var(--light-gray); margin-bottom: 15px; }
-        .time-picker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .time-slot { padding: 10px 5px; border: 2px solid var(--gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .time-slot:hover { border-color: var(--red); }
-        .time-slot.selected { border-color: var(--red); background: var(--red); color: var(--black); }
-        .settings-section { background: var(--gray); padding: 20px; margin: 15px 0; border: 2px solid var(--gray); }
-        .settings-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; color: var(--red); }
-        .settings-current { font-size: 12px; color: var(--light-gray); margin-bottom: 10px; }
-        .settings-value { color: var(--white); font-weight: 700; }
-        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .settings-option { padding: 12px; border: 2px solid var(--light-gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
-        .settings-option:hover { border-color: var(--red); }
-        .settings-option.selected { border-color: var(--red); background: var(--red); color: var(--black); }
-        .settings-option.disabled { opacity: 0.5; cursor: not-allowed; }
-        .faq-item { background: var(--gray); margin: 15px 0; border: 2px solid var(--gray); overflow: hidden; }
-        .faq-question { padding: 20px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
-        .faq-question:hover { color: var(--red); }
-        .faq-toggle { font-size: 18px; color: var(--red); transition: transform 0.2s; }
-        .faq-item.open .faq-toggle { transform: rotate(45deg); }
-        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .faq-item.open .faq-answer { max-height: 500px; }
-        .faq-answer-content { padding: 0 20px 20px 20px; font-size: 13px; line-height: 1.6; color: var(--light-gray); }
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--black); border-top: 2px solid var(--red); display: flex; padding: 8px 5px; max-width: 480px; margin: 0 auto; }
-        .nav-btn { flex: 1; padding: 12px 5px; background: transparent; border: none; color: var(--light-gray); font-family: 'Roboto Mono', monospace; font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .nav-btn.active { color: var(--red); }
-        .content-wrapper { padding-bottom: 80px; }
-        .permission-box { background: var(--gray); border: 2px solid var(--red); padding: 30px; text-align: center; margin: 20px 0; }
-        .permission-icon { font-size: 48px; margin: 20px 0; }
-        .permission-text { font-size: 14px; line-height: 1.6; margin: 20px 0; }
-        .status-badge { display: inline-block; padding: 5px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 3px; }
-        .status-badge.premium { background: var(--red); color: var(--black); }
-        .status-badge.free { background: var(--gray); color: var(--light-gray); border: 1px solid var(--light-gray); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Y NOT RUN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --red: #ff0000;
+      --dark-red: #cc0000;
+      --white: #ffffff;
+      --gray: #333333;
+      --light-gray: #666666;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Roboto Mono', monospace; background: var(--black); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+    .container { max-width: 480px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+    .screen { display: none; animation: fadeIn 0.3s ease-in; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .header { text-align: center; padding: 40px 0; border-bottom: 2px solid var(--red); margin-bottom: 40px; }
+    .header-small { padding: 20px 0; margin-bottom: 20px; }
+    .logo { font-family: 'Anton', sans-serif; font-size: 48px; letter-spacing: 4px; color: var(--red); text-shadow: 3px 3px 0px rgba(255, 0, 0, 0.3); animation: pulse 2s ease-in-out infinite; }
+    .logo-small { font-size: 32px; animation: none; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    .tagline { font-size: 12px; color: var(--light-gray); margin-top: 10px; letter-spacing: 2px; }
+    .btn { width: 100%; padding: 18px; font-family: 'Roboto Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border: 2px solid var(--red); background: transparent; color: var(--red); cursor: pointer; transition: all 0.2s; margin: 10px 0; }
+    .btn:hover { background: var(--red); color: var(--black); transform: translateY(-2px); }
+    .btn-primary { background: var(--red); color: var(--black); }
+    .btn-primary:hover { background: var(--dark-red); border-color: var(--dark-red); }
+    .btn-small { padding: 12px; font-size: 12px; }
+    .btn-danger { border-color: var(--light-gray); color: var(--light-gray); }
+    .btn-danger:hover { background: var(--light-gray); color: var(--black); }
+    .form-group { margin: 30px 0; }
+    .form-label { display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-gray); margin-bottom: 15px; }
+    .activity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .activity-btn { padding: 30px 20px; border: 2px solid var(--gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 16px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+    .activity-btn:hover { border-color: var(--red); }
+    .activity-btn.selected { border-color: var(--red); background: var(--red); color: var(--black); }
+    .frequency-options { display: flex; gap: 10px; }
+    .frequency-btn { flex: 1; padding: 20px; border: 2px solid var(--gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+    .frequency-btn:hover { border-color: var(--red); }
+    .frequency-btn.selected { border-color: var(--red); background: var(--red); color: var(--black); }
+    .intensity-slider { display: flex; flex-direction: column; gap: 10px; }
+    .intensity-option { padding: 20px; border: 2px solid var(--gray); background: transparent; color: var(--white); cursor: pointer; transition: all 0.2s; }
+    .intensity-option:hover { border-color: var(--red); }
+    .intensity-option.selected { border-color: var(--red); background: var(--red); color: var(--black); }
+    .intensity-title { font-size: 16px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+    .intensity-desc { font-size: 11px; opacity: 0.7; }
+    .stat-card { background: var(--gray); border: 2px solid var(--red); padding: 30px; margin: 20px 0; text-align: center; }
+    .stat-number { font-family: 'Anton', sans-serif; font-size: 72px; color: var(--red); line-height: 1; margin: 10px 0; }
+    .stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-gray); }
+    .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 20px 0; }
+    .day-box { aspect-ratio: 1; border: 2px solid var(--gray); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    .day-box.completed { background: var(--red); border-color: var(--red); color: var(--black); }
+    .excuse-list { background: var(--gray); padding: 20px; margin: 20px 0; }
+    .excuse-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-gray); margin-bottom: 15px; }
+    .excuse-item { padding: 10px 0; border-bottom: 1px solid var(--light-gray); font-size: 12px; }
+    .excuse-item:last-child { border-bottom: none; }
+    .premium-banner { background: linear-gradient(135deg, var(--red) 0%, var(--dark-red) 100%); padding: 25px; margin: 30px 0; border: 2px solid var(--red); cursor: pointer; transition: transform 0.2s; }
+    .premium-banner:hover { transform: scale(1.02); }
+    .premium-title { font-family: 'Anton', sans-serif; font-size: 24px; color: var(--black); margin-bottom: 10px; }
+    .premium-price { font-size: 14px; color: var(--black); opacity: 0.8; }
+    .premium-features { margin: 20px 0; }
+    .premium-feature { padding: 15px; background: rgba(51, 51, 51, 0.8); margin: 10px 0; font-size: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+    .premium-feature-content { flex: 1; }
+    .premium-feature-status { font-size: 11px; font-weight: 700; white-space: nowrap; padding-top: 2px; }
+    .premium-feature.locked .premium-feature-status { color: var(--light-gray); }
+    .premium-feature.unlocked .premium-feature-status { color: var(--red); }
+    .custom-times-section { background: var(--gray); border: 2px solid var(--red); padding: 20px; margin: 20px 0; display: none; }
+    .custom-times-section.visible { display: block; }
+    .custom-times-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; color: var(--red); }
+    .custom-times-current { font-size: 12px; color: var(--light-gray); margin-bottom: 15px; }
+    .time-picker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+    .time-slot { padding: 10px 5px; border: 2px solid var(--gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+    .time-slot:hover { border-color: var(--red); }
+    .time-slot.selected { border-color: var(--red); background: var(--red); color: var(--black); }
+    .settings-section { background: var(--gray); padding: 20px; margin: 15px 0; border: 2px solid var(--gray); }
+    .settings-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; color: var(--red); }
+    .settings-current { font-size: 12px; color: var(--light-gray); margin-bottom: 10px; }
+    .settings-value { color: var(--white); font-weight: 700; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .settings-option { padding: 12px; border: 2px solid var(--light-gray); background: transparent; color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+    .settings-option:hover { border-color: var(--red); }
+    .settings-option.selected { border-color: var(--red); background: var(--red); color: var(--black); }
+    .settings-option.disabled { opacity: 0.5; cursor: not-allowed; }
+    .faq-item { background: var(--gray); margin: 15px 0; border: 2px solid var(--gray); overflow: hidden; }
+    .faq-question { padding: 20px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+    .faq-question:hover { color: var(--red); }
+    .faq-toggle { font-size: 18px; color: var(--red); transition: transform 0.2s; }
+    .faq-item.open .faq-toggle { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+    .faq-item.open .faq-answer { max-height: 500px; }
+    .faq-answer-content { padding: 0 20px 20px 20px; font-size: 13px; line-height: 1.6; color: var(--light-gray); }
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--black); border-top: 2px solid var(--red); display: flex; padding: 8px 5px; max-width: 480px; margin: 0 auto; }
+    .nav-btn { flex: 1; padding: 12px 5px; background: transparent; border: none; color: var(--light-gray); font-family: 'Roboto Mono', monospace; font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+    .nav-btn.active { color: var(--red); }
+    .content-wrapper { padding-bottom: 80px; }
+    .permission-box { background: var(--gray); border: 2px solid var(--red); padding: 30px; text-align: center; margin: 20px 0; }
+    .permission-icon { font-size: 48px; margin: 20px 0; }
+    .permission-text { font-size: 14px; line-height: 1.6; margin: 20px 0; }
+    .status-badge { display: inline-block; padding: 5px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 3px; }
+    .status-badge.premium { background: var(--red); color: var(--black); }
+    .status-badge.free { background: var(--gray); color: var(--light-gray); border: 1px solid var(--light-gray); }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- Onboarding Screen 1: Activity -->
-        <div id="screen-activity" class="screen active">
-            <div class="header">
-                <div class="logo">Y NOT RUN</div>
-                <div class="tagline">STOP MAKING EXCUSES</div>
-            </div>
-            <div class="form-group">
-                <div class="form-label">What are you NOT doing?</div>
-                <div class="activity-grid">
-                    <button class="activity-btn" data-activity="run">RUN</button>
-                    <button class="activity-btn" data-activity="lift">LIFT</button>
-                    <button class="activity-btn" data-activity="swim">SWIM</button>
-                    <button class="activity-btn" data-activity="bike">BIKE</button>
-                </div>
-            </div>
-            <button class="btn btn-primary" id="btn-continue-activity" disabled>CONTINUE</button>
+  <div class="container">
+    <!-- Onboarding Screen 1: Activity -->
+    <div id="screen-activity" class="screen active">
+      <div class="header">
+        <div class="logo">Y NOT RUN</div>
+        <div class="tagline">STOP MAKING EXCUSES</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">What are you NOT doing?</div>
+        <div class="activity-grid">
+          <button class="activity-btn" data-activity="run">RUN</button>
+          <button class="activity-btn" data-activity="lift">LIFT</button>
+          <button class="activity-btn" data-activity="swim">SWIM</button>
+          <button class="activity-btn" data-activity="bike">BIKE</button>
         </div>
-
-        <!-- Onboarding Screen 2: Frequency -->
-        <div id="screen-frequency" class="screen">
-            <div class="header"><div class="logo">Y NOT RUN</div></div>
-            <div class="form-group">
-                <div class="form-label">How often should you be doing this?</div>
-                <div class="frequency-options">
-                    <button class="frequency-btn" data-frequency="3">3x/week</button>
-                    <button class="frequency-btn" data-frequency="5">5x/week</button>
-                    <button class="frequency-btn" data-frequency="7">Daily</button>
-                </div>
-            </div>
-            <button class="btn btn-primary" id="btn-continue-frequency" disabled>CONTINUE</button>
-            <button class="btn" id="btn-back-frequency">BACK</button>
-        </div>
-
-        <!-- Onboarding Screen 3: Intensity -->
-        <div id="screen-intensity" class="screen">
-            <div class="header"><div class="logo">Y NOT RUN</div></div>
-            <div class="form-group">
-                <div class="form-label">How aggressive should we be?</div>
-                <div class="intensity-slider">
-                    <div class="intensity-option" data-intensity="chill">
-                        <div class="intensity-title">CHILL</div>
-                        <div class="intensity-desc">Friendly reminders, 2x per day</div>
-                    </div>
-                    <div class="intensity-option" data-intensity="real">
-                        <div class="intensity-title">REAL</div>
-                        <div class="intensity-desc">Direct callouts, 3x per day</div>
-                    </div>
-                    <div class="intensity-option" data-intensity="brutal">
-                        <div class="intensity-title">BRUTAL</div>
-                        <div class="intensity-desc">No mercy, constant pressure (Premium)</div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" id="btn-continue-intensity" disabled>CONTINUE</button>
-            <button class="btn" id="btn-back-intensity">BACK</button>
-        </div>
-
-        <!-- Notification Permission Screen -->
-        <div id="screen-permission" class="screen">
-            <div class="header"><div class="logo">Y NOT RUN</div></div>
-            <div class="form-group">
-                <div class="form-label">Email (Optional - for updates only)</div>
-                <input type="email" id="user-email" placeholder="your@email.com" style="width: 100%; padding: 15px; background: var(--gray); border: 2px solid var(--gray); color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 14px; margin-bottom: 20px;">
-            </div>
-            <div class="permission-box">
-                <div class="permission-icon">🔔</div>
-                <div class="permission-text">We need permission to call you out when you're slacking.<br><br>Enable notifications or this app is completely useless.</div>
-            </div>
-            <button class="btn btn-primary" id="btn-enable-notifications">ENABLE NOTIFICATIONS</button>
-            <button class="btn" id="btn-skip-notifications">SKIP (NOT RECOMMENDED)</button>
-        </div>
-
-        <!-- Home Screen -->
-        <div id="screen-home" class="screen">
-            <div class="content-wrapper">
-                <div class="header">
-                    <div class="logo">Y NOT RUN</div>
-                    <div class="tagline" id="home-tagline">STOP MAKING EXCUSES</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">CURRENT STREAK</div>
-                    <div class="stat-number" id="streak-count">0</div>
-                    <div class="stat-label">DAYS</div>
-                </div>
-                <div id="free-user-prompt" style="display: none; background: var(--gray); border: 2px solid var(--red); padding: 20px; margin: 20px 0; text-align: center; cursor: pointer;" onclick="document.querySelector('[data-screen=premium]').click();">
-                    <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">UNLOCK BRUTAL MODE</div>
-                    <div style="font-size: 11px; color: var(--light-gray);">Get 8x notifications + streak protection for $2.99/mo</div>
-                </div>
-                <div class="form-label">THIS WEEK</div>
-                <div class="week-grid" id="week-grid">
-                    <div class="day-box">M</div><div class="day-box">T</div><div class="day-box">W</div><div class="day-box">T</div><div class="day-box">F</div><div class="day-box">S</div><div class="day-box">S</div>
-                </div>
-                <div class="excuse-list" id="excuse-list">
-                    <div class="excuse-title">YOUR EXCUSES THIS WEEK</div>
-                    <div class="excuse-item">No excuses yet. Good.</div>
-                </div>
-                <button class="btn btn-primary" id="btn-log-workout">I DID IT TODAY</button>
-                <button class="btn" id="btn-skip-today">SKIP TODAY</button>
-            </div>
-            <div class="nav-bar">
-                <button class="nav-btn active" data-screen="home">HOME</button>
-                <button class="nav-btn" data-screen="premium">PREMIUM</button>
-                <button class="nav-btn" data-screen="settings">SETTINGS</button>
-                <button class="nav-btn" data-screen="faq">FAQ</button>
-            </div>
-        </div>
-
-        <!-- Premium Screen -->
-        <div id="screen-premium" class="screen">
-            <div class="content-wrapper">
-                <div class="header header-small">
-                    <div class="logo logo-small">PREMIUM</div>
-                    <div class="tagline">UNLOCK HARDCORE MODE</div>
-                </div>
-                <div class="premium-banner" id="premium-banner">
-                    <div class="premium-title">GO PREMIUM</div>
-                    <div class="premium-price">$2.99/MONTH</div>
-                </div>
-                <div class="premium-features" id="premium-features-list">
-                    <div class="premium-feature" data-feature="brutal">
-                        <div class="premium-feature-content"><strong>BRUTAL MODE</strong><br>8 notifications per day. Aggressive messaging. Maximum pressure.</div>
-                        <div class="premium-feature-status">🔒 LOCKED</div>
-                    </div>
-                    <div class="premium-feature" data-feature="streak">
-                        <div class="premium-feature-content"><strong>STREAK PROTECTION</strong><br>One free skip pass per week. Protect your streak.</div>
-                        <div class="premium-feature-status">🔒 LOCKED</div>
-                    </div>
-                    <div class="premium-feature" data-feature="custom">
-                        <div class="premium-feature-content"><strong>CUSTOM TIMES</strong><br>Set exactly when you want notifications. Your schedule.</div>
-                        <div class="premium-feature-status">🔒 LOCKED</div>
-                    </div>
-                    <div class="premium-feature" data-feature="adfree">
-                        <div class="premium-feature-content"><strong>AD-FREE</strong><br>No upgrade prompts. Clean experience.</div>
-                        <div class="premium-feature-status">🔒 LOCKED</div>
-                    </div>
-                </div>
-                <div class="custom-times-section" id="custom-times-section">
-                    <div class="custom-times-title">📅 SET YOUR NOTIFICATION TIMES</div>
-                    <div class="custom-times-current" id="current-times-display">Select up to 8 times for daily notifications</div>
-                    <div class="time-picker-grid" id="time-picker-grid"></div>
-                    <button class="btn btn-primary btn-small" id="btn-save-times">SAVE TIMES</button>
-                </div>
-                <button class="btn btn-primary" id="btn-upgrade">UPGRADE NOW</button>
-            </div>
-            <div class="nav-bar">
-                <button class="nav-btn" data-screen="home">HOME</button>
-                <button class="nav-btn active" data-screen="premium">PREMIUM</button>
-                <button class="nav-btn" data-screen="settings">SETTINGS</button>
-                <button class="nav-btn" data-screen="faq">FAQ</button>
-            </div>
-        </div>
-
-        <!-- Settings Screen -->
-        <div id="screen-settings" class="screen">
-            <div class="content-wrapper">
-                <div class="header header-small">
-                    <div class="logo logo-small">SETTINGS</div>
-                    <div class="tagline">CUSTOMIZE YOUR EXPERIENCE</div>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-section-title">📊 Account Status</div>
-                    <div class="settings-current">Status: <span id="settings-status" class="status-badge free">FREE</span></div>
-                    <button class="btn btn-small" id="btn-manage-subscription" style="display: none;">MANAGE SUBSCRIPTION</button>
-                    <button class="btn btn-primary btn-small" id="btn-upgrade-settings">UPGRADE TO PREMIUM</button>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-section-title">🏃 Activity</div>
-                    <div class="settings-current">Currently tracking: <span id="settings-activity" class="settings-value">RUN</span></div>
-                    <div class="settings-grid">
-                        <button class="settings-option" data-setting-activity="run">RUN</button>
-                        <button class="settings-option" data-setting-activity="lift">LIFT</button>
-                        <button class="settings-option" data-setting-activity="swim">SWIM</button>
-                        <button class="settings-option" data-setting-activity="bike">BIKE</button>
-                    </div>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-section-title">📅 Frequency</div>
-                    <div class="settings-current">Goal: <span id="settings-frequency" class="settings-value">5x/week</span></div>
-                    <div class="settings-grid">
-                        <button class="settings-option" data-setting-frequency="3">3x/week</button>
-                        <button class="settings-option" data-setting-frequency="5">5x/week</button>
-                        <button class="settings-option" data-setting-frequency="7">Daily</button>
-                    </div>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-section-title">🔥 Notification Intensity</div>
-                    <div class="settings-current">Current mode: <span id="settings-intensity" class="settings-value">REAL</span></div>
-                    <div class="settings-grid">
-                        <button class="settings-option" data-setting-intensity="chill">CHILL</button>
-                        <button class="settings-option" data-setting-intensity="real">REAL</button>
-                        <button class="settings-option" data-setting-intensity="brutal">BRUTAL 👑</button>
-                    </div>
-                    <div id="brutal-notice" style="font-size: 11px; color: var(--light-gray); margin-top: 10px; display: none;">👑 BRUTAL mode requires Premium</div>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-section-title">🔔 Notifications</div>
-                    <div class="settings-current">Status: <span id="settings-notifications" class="settings-value">ENABLED</span></div>
-                    <button class="btn btn-small" id="btn-enable-notifications-settings">RE-ENABLE NOTIFICATIONS</button>
-                </div>
-                <div class="settings-section" style="border-color: var(--dark-red);">
-                    <div class="settings-section-title" style="color: var(--dark-red);">⚠️ Danger Zone</div>
-                    <button class="btn btn-danger btn-small" id="btn-reset-data">RESET ALL DATA</button>
-                </div>
-            </div>
-            <div class="nav-bar">
-                <button class="nav-btn" data-screen="home">HOME</button>
-                <button class="nav-btn" data-screen="premium">PREMIUM</button>
-                <button class="nav-btn active" data-screen="settings">SETTINGS</button>
-                <button class="nav-btn" data-screen="faq">FAQ</button>
-            </div>
-        </div>
-
-        <!-- FAQ Screen -->
-        <div id="screen-faq" class="screen">
-            <div class="content-wrapper">
-                <div class="header header-small">
-                    <div class="logo logo-small">FAQ</div>
-                    <div class="tagline">GOT QUESTIONS?</div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">How do notifications work?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Y NOT RUN sends push notifications to remind you to work out. The number depends on your intensity: CHILL (2x/day), REAL (3x/day), or BRUTAL (8x/day, Premium only). Make sure notifications are enabled in your browser settings.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">How do I cancel my subscription?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Go to Settings → Manage Subscription. This takes you to Stripe where you can cancel anytime. Premium features stay active until the end of your billing period.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">What is Streak Protection?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Premium users get one "skip pass" per week. Use it to skip a day without breaking your streak. Without it, skipping resets your streak to zero.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">Why can't I use BRUTAL mode?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">BRUTAL mode is Premium only. It unlocks 8 notifications per day with maximum pressure. Upgrade for $2.99/month to access it.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">How do I change notification times?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Custom times are a Premium feature. Once upgraded, go to Premium tab and use the time picker to select up to 8 specific notification times.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">Is my data private?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Yes. Your data is stored locally and in our secure Firebase database. We only store what's necessary for notifications and progress tracking. We never sell your data.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">Notifications aren't working?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Try: 1) Enable notifications in browser settings. 2) Go to Settings and click "Re-enable Notifications". 3) Don't use incognito mode. 4) On mobile, check browser has notification permissions.</div></div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">How do I contact support?<span class="faq-toggle">+</span></div>
-                    <div class="faq-answer"><div class="faq-answer-content">Email support@ynotrun.com. We typically respond within 24 hours.</div></div>
-                </div>
-                <div style="text-align: center; margin-top: 30px; padding: 20px;">
-                    <div style="font-size: 11px; color: var(--light-gray); letter-spacing: 1px;">STILL HAVE QUESTIONS?</div>
-                    <button class="btn btn-small" style="margin-top: 15px;" onclick="window.location.href='mailto:support@ynotrun.com'">CONTACT SUPPORT</button>
-                </div>
-            </div>
-            <div class="nav-bar">
-                <button class="nav-btn" data-screen="home">HOME</button>
-                <button class="nav-btn" data-screen="premium">PREMIUM</button>
-                <button class="nav-btn" data-screen="settings">SETTINGS</button>
-                <button class="nav-btn active" data-screen="faq">FAQ</button>
-            </div>
-        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-continue-activity" disabled>CONTINUE</button>
     </div>
 
-    <script src="https://js.stripe.com/v3/"></script>
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNQtNS2I67kPOIRMVN2NB_qqY3X9lqf_k",
-            authDomain: "ynotrun-7cd5c.firebaseapp.com",
-            projectId: "ynotrun-7cd5c",
-            storageBucket: "ynotrun-7cd5c.firebasestorage.app",
-            messagingSenderId: "682603769946",
-            appId: "1:682603769946:web:6ea4a821df1380e65d6863"
-        };
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-        window.firebaseMessaging = messaging;
-        window.firebaseGetToken = getToken;
-        onMessage(messaging, (payload) => {
-            console.log('Message received:', payload);
-            if (Notification.permission === 'granted') {
-                new Notification(payload.notification.title, { body: payload.notification.body, icon: '🏃', requireInteraction: true });
-            }
-        });
-    </script>
-    <script>
-        const PAYMENT_LINK = 'https://buy.stripe.com/test_4gM5kvgG73mvfKr4A4eQM00';
-        let appState = { activity: null, frequency: null, intensity: null, streak: 0, weekData: [false,false,false,false,false,false,false], excuses: [], lastWorkout: null, notificationsEnabled: false, isPremium: false, email: null, skipPassesUsed: 0, customNotificationTimes: [], fcmToken: null };
+    <!-- Onboarding Screen 2: Frequency -->
+    <div id="screen-frequency" class="screen">
+      <div class="header"><div class="logo">Y NOT RUN</div></div>
+      <div class="form-group">
+        <div class="form-label">How often should you be doing this?</div>
+        <div class="frequency-options">
+          <button class="frequency-btn" data-frequency="3">3x/week</button>
+          <button class="frequency-btn" data-frequency="5">5x/week</button>
+          <button class="frequency-btn" data-frequency="7">Daily</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-continue-frequency" disabled>CONTINUE</button>
+      <button class="btn" id="btn-back-frequency">BACK</button>
+    </div>
 
-        function loadState() { const saved = localStorage.getItem('ynotrun_state'); if (saved) { appState = { ...appState, ...JSON.parse(saved) }; updateHomeScreen(); updateSettingsScreen(); } }
-        function saveState() { localStorage.setItem('ynotrun_state', JSON.stringify(appState)); }
-        function showScreen(screenId) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('screen-' + screenId).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.screen === screenId); }); if (screenId === 'settings') updateSettingsScreen(); }
+    <!-- Onboarding Screen 3: Intensity -->
+    <div id="screen-intensity" class="screen">
+      <div class="header"><div class="logo">Y NOT RUN</div></div>
+      <div class="form-group">
+        <div class="form-label">How aggressive should we be?</div>
+        <div class="intensity-slider">
+          <div class="intensity-option" data-intensity="chill">
+            <div class="intensity-title">CHILL</div>
+            <div class="intensity-desc">Friendly reminders, 2x per day</div>
+          </div>
+          <div class="intensity-option" data-intensity="real">
+            <div class="intensity-title">REAL</div>
+            <div class="intensity-desc">Direct callouts, 3x per day</div>
+          </div>
+          <div class="intensity-option" data-intensity="brutal">
+            <div class="intensity-title">BRUTAL</div>
+            <div class="intensity-desc">No mercy, constant pressure (Premium)</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-continue-intensity" disabled>CONTINUE</button>
+      <button class="btn" id="btn-back-intensity">BACK</button>
+    </div>
 
-        // Onboarding
-        document.querySelectorAll('.activity-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); appState.activity = btn.dataset.activity; document.getElementById('btn-continue-activity').disabled = false; }); });
-        document.getElementById('btn-continue-activity').addEventListener('click', () => showScreen('frequency'));
-        document.querySelectorAll('.frequency-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.frequency-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); appState.frequency = parseInt(btn.dataset.frequency); document.getElementById('btn-continue-frequency').disabled = false; }); });
-        document.getElementById('btn-continue-frequency').addEventListener('click', () => showScreen('intensity'));
-        document.getElementById('btn-back-frequency').addEventListener('click', () => showScreen('activity'));
-        document.querySelectorAll('.intensity-option').forEach(btn => { btn.addEventListener('click', () => { const intensity = btn.dataset.intensity; if (intensity === 'brutal' && !appState.isPremium) { alert('BRUTAL mode requires premium.'); return; } document.querySelectorAll('.intensity-option').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); appState.intensity = intensity; document.getElementById('btn-continue-intensity').disabled = false; }); });
-        document.getElementById('btn-continue-intensity').addEventListener('click', () => showScreen('permission'));
-        document.getElementById('btn-back-intensity').addEventListener('click', () => showScreen('frequency'));
+    <!-- Notification Permission Screen (now also includes legit signup/login) -->
+    <div id="screen-permission" class="screen">
+      <div class="header"><div class="logo">Y NOT RUN</div></div>
 
-        // Notifications
-        document.getElementById('btn-enable-notifications').addEventListener('click', async () => { await enableNotifications(); showScreen('home'); });
-        document.getElementById('btn-skip-notifications').addEventListener('click', () => { const emailInput = document.getElementById('user-email'); if (emailInput && emailInput.value) { appState.email = emailInput.value; saveState(); } alert('Fine. But don\'t blame us when you skip every workout.'); showScreen('home'); });
+      <div class="form-group">
+        <div class="form-label">Email (Required for Premium + Sync)</div>
+        <input type="email" id="user-email" placeholder="your@email.com"
+          style="width: 100%; padding: 15px; background: var(--gray); border: 2px solid var(--gray); color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 14px; margin-bottom: 12px;">
 
-        async function enableNotifications() {
-            const emailInput = document.getElementById('user-email');
-            if (emailInput && emailInput.value) appState.email = emailInput.value;
-            if ('Notification' in window) {
-                const permission = await Notification.requestPermission();
-                appState.notificationsEnabled = (permission === 'granted');
-                if (appState.notificationsEnabled) {
-                    try {
-                        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                        console.log('Service Worker registered:', registration);
-                        await navigator.serviceWorker.ready;
-                        console.log('Service Worker ready');
-                        if (window.firebaseMessaging && window.firebaseGetToken) {
-                            const token = await window.firebaseGetToken(window.firebaseMessaging, { vapidKey: 'BO7gUuHBFaJW8YakqXVdr-uVlRsbHOlwZwf1vQ93Y_yuQKEiAubnxPfuCtCWwDJzFZ-_db1knnc7JSKTDW7dx_E', serviceWorkerRegistration: registration });
-                            if (token) { console.log('FCM Token:', token); appState.fcmToken = token; scheduleNotifications(); alert('Notifications enabled. No more excuses.'); }
-                        }
-                    } catch (error) { console.error('Service Worker registration failed:', error); }
-                } else { alert('You denied notifications.'); }
-            }
-            saveState();
-        }
+        <div class="form-label">Password (6+ chars)</div>
+        <input type="password" id="user-password" placeholder="password"
+          style="width: 100%; padding: 15px; background: var(--gray); border: 2px solid var(--gray); color: var(--white); font-family: 'Roboto Mono', monospace; font-size: 14px; margin-bottom: 10px;">
 
-        async function scheduleNotifications() {
-            if (!appState.notificationsEnabled || !appState.fcmToken) return;
-            let intervals = appState.isPremium && appState.customNotificationTimes.length > 0 ? appState.customNotificationTimes : appState.intensity === 'chill' ? [10, 16] : appState.intensity === 'brutal' && appState.isPremium ? [7,9,11,13,15,17,19,21] : [9, 13, 18];
-            console.log('Notification schedule:', intervals.map(t => t + ':00').join(', '));
-            try {
-                const response = await fetch('https://us-central1-ynotrun-7cd5c.cloudfunctions.net/updateUserSettings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fcmToken: appState.fcmToken, email: appState.email, intensity: appState.intensity, isPremium: appState.isPremium, customNotificationTimes: appState.customNotificationTimes, notificationsEnabled: appState.notificationsEnabled }) });
-                const result = await response.json();
-                console.log('Backend response:', result);
-                if (result.success) console.log('✅ Notifications successfully scheduled on server');
-            } catch (error) { console.error('Error updating notification settings:', error); }
-        }
+        <button class="btn btn-primary btn-small" id="btn-signup">SIGN UP</button>
+        <button class="btn btn-small" id="btn-login">LOG IN</button>
+        <button class="btn btn-danger btn-small" id="btn-logout" style="display:none;">LOG OUT</button>
+        <div id="auth-status" style="font-size:12px;color:var(--light-gray);margin-top:8px;"></div>
+      </div>
 
-        // Home actions
-        document.getElementById('btn-log-workout').addEventListener('click', () => { const today = new Date().getDay(); const dayIndex = today === 0 ? 6 : today - 1; if (!appState.weekData[dayIndex]) { appState.weekData[dayIndex] = true; appState.streak++; appState.lastWorkout = new Date().toISOString(); saveState(); updateHomeScreen(); alert('GOOD. Keep it up.'); } else { alert('You already logged today.'); } });
-        document.getElementById('btn-skip-today').addEventListener('click', () => { if (appState.isPremium && appState.skipPassesUsed < 1) { if (confirm('Use skip pass to protect streak?')) { appState.skipPassesUsed++; saveState(); alert('Skip pass used. Streak protected.'); return; } } const excuse = prompt('Why are you skipping?'); if (excuse) { appState.excuses.push({ date: new Date().toLocaleDateString(), reason: excuse }); appState.streak = 0; saveState(); updateHomeScreen(); alert('Pathetic. Your excuse has been recorded.'); } });
+      <div class="permission-box">
+        <div class="permission-icon">🔔</div>
+        <div class="permission-text">
+          We need permission to call you out when you're slacking.<br><br>
+          Enable notifications or this app is completely useless.
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-enable-notifications">ENABLE NOTIFICATIONS</button>
+      <button class="btn" id="btn-skip-notifications">SKIP (NOT RECOMMENDED)</button>
+    </div>
 
-        function updateHomeScreen() {
-            document.getElementById('streak-count').textContent = appState.streak;
-            const weekGrid = document.getElementById('week-grid');
-            const days = ['M','T','W','T','F','S','S'];
-            weekGrid.innerHTML = appState.weekData.map((completed, i) => '<div class="day-box ' + (completed ? 'completed' : '') + '">' + days[i] + '</div>').join('');
-            const excuseList = document.getElementById('excuse-list');
-            if (appState.excuses.length === 0) { excuseList.innerHTML = '<div class="excuse-title">YOUR EXCUSES THIS WEEK</div><div class="excuse-item">No excuses yet. Good.</div>'; }
-            else { excuseList.innerHTML = '<div class="excuse-title">YOUR PATHETIC EXCUSES</div>' + appState.excuses.slice(-5).reverse().map(e => '<div class="excuse-item">' + e.date + ': ' + e.reason + '</div>').join(''); }
-            updatePremiumStatus();
-        }
+    <!-- Home Screen -->
+    <div id="screen-home" class="screen">
+      <div class="content-wrapper">
+        <div class="header">
+          <div class="logo">Y NOT RUN</div>
+          <div class="tagline" id="home-tagline">STOP MAKING EXCUSES</div>
+        </div>
 
-        function updateSettingsScreen() {
-            const statusEl = document.getElementById('settings-status');
-            if (appState.isPremium) { statusEl.textContent = 'PREMIUM'; statusEl.className = 'status-badge premium'; document.getElementById('btn-manage-subscription').style.display = 'block'; document.getElementById('btn-upgrade-settings').style.display = 'none'; }
-            else { statusEl.textContent = 'FREE'; statusEl.className = 'status-badge free'; document.getElementById('btn-manage-subscription').style.display = 'none'; document.getElementById('btn-upgrade-settings').style.display = 'block'; }
-            document.getElementById('settings-activity').textContent = (appState.activity || 'run').toUpperCase();
-            document.querySelectorAll('[data-setting-activity]').forEach(btn => { btn.classList.toggle('selected', btn.dataset.settingActivity === appState.activity); });
-            document.getElementById('settings-frequency').textContent = appState.frequency === 7 ? 'DAILY' : appState.frequency + 'x/week';
-            document.querySelectorAll('[data-setting-frequency]').forEach(btn => { btn.classList.toggle('selected', parseInt(btn.dataset.settingFrequency) === appState.frequency); });
-            document.getElementById('settings-intensity').textContent = (appState.intensity || 'real').toUpperCase();
-            document.querySelectorAll('[data-setting-intensity]').forEach(btn => { btn.classList.toggle('selected', btn.dataset.settingIntensity === appState.intensity); btn.classList.toggle('disabled', btn.dataset.settingIntensity === 'brutal' && !appState.isPremium); });
-            document.getElementById('brutal-notice').style.display = appState.isPremium ? 'none' : 'block';
-            document.getElementById('settings-notifications').textContent = appState.notificationsEnabled ? 'ENABLED' : 'DISABLED';
-        }
+        <div class="stat-card">
+          <div class="stat-label">CURRENT STREAK</div>
+          <div class="stat-number" id="streak-count">0</div>
+          <div class="stat-label">DAYS</div>
+        </div>
 
-        // Settings handlers
-        document.querySelectorAll('[data-setting-activity]').forEach(btn => { btn.addEventListener('click', () => { appState.activity = btn.dataset.settingActivity; saveState(); updateSettingsScreen(); scheduleNotifications(); }); });
-        document.querySelectorAll('[data-setting-frequency]').forEach(btn => { btn.addEventListener('click', () => { appState.frequency = parseInt(btn.dataset.settingFrequency); saveState(); updateSettingsScreen(); }); });
-        document.querySelectorAll('[data-setting-intensity]').forEach(btn => { btn.addEventListener('click', () => { if (btn.dataset.settingIntensity === 'brutal' && !appState.isPremium) { alert('BRUTAL mode requires Premium.'); return; } appState.intensity = btn.dataset.settingIntensity; saveState(); updateSettingsScreen(); scheduleNotifications(); alert('Intensity changed to ' + appState.intensity.toUpperCase()); }); });
-        document.getElementById('btn-enable-notifications-settings').addEventListener('click', async () => { await enableNotifications(); updateSettingsScreen(); });
-        document.getElementById('btn-upgrade-settings').addEventListener('click', () => { window.location.href = PAYMENT_LINK; });
-        document.getElementById('btn-manage-subscription').addEventListener('click', () => { alert('To manage your subscription, email support@ynotrun.com'); });
-        document.getElementById('btn-reset-data').addEventListener('click', () => { if (confirm('Reset ALL data? This cannot be undone.')) { localStorage.removeItem('ynotrun_state'); localStorage.removeItem('ynotrun_last_reset'); alert('All data reset.'); location.reload(); } });
+        <div id="free-user-prompt" style="display: none; background: var(--gray); border: 2px solid var(--red); padding: 20px; margin: 20px 0; text-align: center; cursor: pointer;" onclick="document.querySelector('[data-screen=premium]').click();">
+          <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">UNLOCK BRUTAL MODE</div>
+          <div style="font-size: 11px; color: var(--light-gray);">Get 8x notifications + streak protection for $2.99/mo</div>
+        </div>
 
-        // FAQ accordion
-        document.querySelectorAll('.faq-question').forEach(q => { q.addEventListener('click', () => { q.parentElement.classList.toggle('open'); }); });
+        <div class="form-label">THIS WEEK</div>
+        <div class="week-grid" id="week-grid">
+          <div class="day-box">M</div><div class="day-box">T</div><div class="day-box">W</div><div class="day-box">T</div><div class="day-box">F</div><div class="day-box">S</div><div class="day-box">S</div>
+        </div>
 
-        // Time picker
-        function initTimePicker() {
-            const grid = document.getElementById('time-picker-grid');
-            grid.innerHTML = '';
-            for (let hour = 6; hour <= 22; hour++) {
-                const btn = document.createElement('button');
-                btn.className = 'time-slot';
-                btn.textContent = (hour > 12 ? hour - 12 : hour) + (hour >= 12 ? 'pm' : 'am');
-                if (appState.customNotificationTimes.includes(hour)) btn.classList.add('selected');
-                btn.addEventListener('click', () => {
-                    const idx = appState.customNotificationTimes.indexOf(hour);
-                    if (idx > -1) { appState.customNotificationTimes.splice(idx, 1); btn.classList.remove('selected'); }
-                    else { if (appState.customNotificationTimes.length >= 8) { alert('Max 8 times.'); return; } appState.customNotificationTimes.push(hour); appState.customNotificationTimes.sort((a,b) => a-b); btn.classList.add('selected'); }
-                    updateCurrentTimesDisplay();
-                });
-                grid.appendChild(btn);
-            }
-            updateCurrentTimesDisplay();
-        }
-        function updateCurrentTimesDisplay() { const display = document.getElementById('current-times-display'); display.textContent = appState.customNotificationTimes.length === 0 ? 'Select up to 8 times' : 'Selected: ' + appState.customNotificationTimes.map(h => (h > 12 ? h-12 : h) + (h >= 12 ? 'pm' : 'am')).join(', '); }
-        document.getElementById('btn-save-times').addEventListener('click', () => { if (appState.customNotificationTimes.length === 0) { alert('Select at least one time.'); return; } saveState(); scheduleNotifications(); alert('Times saved!'); });
+        <div class="excuse-list" id="excuse-list">
+          <div class="excuse-title">YOUR EXCUSES THIS WEEK</div>
+          <div class="excuse-item">No excuses yet. Good.</div>
+        </div>
 
-        function updatePremiumStatus() {
-            const premiumBanner = document.getElementById('premium-banner');
-            const upgradeBtn = document.getElementById('btn-upgrade');
-            const homeTagline = document.getElementById('home-tagline');
-            const freeUserPrompt = document.getElementById('free-user-prompt');
-            const customTimesSection = document.getElementById('custom-times-section');
-            if (appState.isPremium) {
-                if (premiumBanner) premiumBanner.style.display = 'none';
-                if (upgradeBtn) upgradeBtn.style.display = 'none';
-                if (freeUserPrompt) freeUserPrompt.style.display = 'none';
-                if (customTimesSection) { customTimesSection.classList.add('visible'); initTimePicker(); }
-                if (homeTagline) { homeTagline.innerHTML = 'PREMIUM ACTIVE'; homeTagline.style.color = 'var(--red)'; }
-                document.querySelectorAll('.premium-feature').forEach(f => { f.classList.remove('locked'); f.classList.add('unlocked'); const s = f.querySelector('.premium-feature-status'); if (s) s.textContent = '✓ UNLOCKED'; });
-            } else {
-                if (freeUserPrompt) freeUserPrompt.style.display = 'block';
-                if (customTimesSection) customTimesSection.classList.remove('visible');
-                document.querySelectorAll('.premium-feature').forEach(f => { f.classList.add('locked'); f.classList.remove('unlocked'); const s = f.querySelector('.premium-feature-status'); if (s) s.textContent = '🔒 LOCKED'; });
-            }
-        }
+        <button class="btn btn-primary" id="btn-log-workout">I DID IT TODAY</button>
+        <button class="btn" id="btn-skip-today">SKIP TODAY</button>
+      </div>
 
-        // Navigation
-        document.querySelectorAll('.nav-btn').forEach(btn => { btn.addEventListener('click', () => showScreen(btn.dataset.screen)); });
-        document.getElementById('btn-upgrade').addEventListener('click', () => { window.location.href = PAYMENT_LINK; });
+      <div class="nav-bar">
+        <button class="nav-btn active" data-screen="home">HOME</button>
+        <button class="nav-btn" data-screen="premium">PREMIUM</button>
+        <button class="nav-btn" data-screen="settings">SETTINGS</button>
+        <button class="nav-btn" data-screen="faq">FAQ</button>
+      </div>
+    </div>
 
-        // Init
-        loadState();
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true' || urlParams.get('session_id')) { appState.isPremium = true; saveState(); window.history.replaceState({}, document.title, window.location.pathname); alert('PREMIUM ACTIVATED!'); }
-        updatePremiumStatus();
+    <!-- Premium Screen -->
+    <div id="screen-premium" class="screen">
+      <div class="content-wrapper">
+        <div class="header header-small">
+          <div class="logo logo-small">PREMIUM</div>
+          <div class="tagline">UNLOCK HARDCORE MODE</div>
+        </div>
+
+        <div class="premium-banner" id="premium-banner">
+          <div class="premium-title">GO PREMIUM</div>
+          <div class="premium-price">$2.99/MONTH</div>
+        </div>
+
+        <div class="premium-features" id="premium-features-list">
+          <div class="premium-feature" data-feature="brutal">
+            <div class="premium-feature-content"><strong>BRUTAL MODE</strong><br>8 notifications per day. Aggressive messaging. Maximum pressure.</div>
+            <div class="premium-feature-status">🔒 LOCKED</div>
+          </div>
+          <div class="premium-feature" data-feature="streak">
+            <div class="premium-feature-content"><strong>STREAK PROTECTION</strong><br>One free skip pass per week. Protect your streak.</div>
+            <div class="premium-feature-status">🔒 LOCKED</div>
+          </div>
+          <div class="premium-feature" data-feature="custom">
+            <div class="premium-feature-content"><strong>CUSTOM TIMES</strong><br>Set exactly when you want notifications. Your schedule.</div>
+            <div class="premium-feature-status">🔒 LOCKED</div>
+          </div>
+          <div class="premium-feature" data-feature="adfree">
+            <div class="premium-feature-content"><strong>AD-FREE</strong><br>No upgrade prompts. Clean experience.</div>
+            <div class="premium-feature-status">🔒 LOCKED</div>
+          </div>
+        </div>
+
+        <div class="custom-times-section" id="custom-times-section">
+          <div class="custom-times-title">📅 SET YOUR NOTIFICATION TIMES</div>
+          <div class="custom-times-current" id="current-times-display">Select up to 8 times for daily notifications</div>
+          <div class="time-picker-grid" id="time-picker-grid"></div>
+          <button class="btn btn-primary btn-small" id="btn-save-times">SAVE TIMES</button>
+        </div>
+
+        <button class="btn btn-primary" id="btn-upgrade">UPGRADE NOW</button>
+      </div>
+
+      <div class="nav-bar">
+        <button class="nav-btn" data-screen="home">HOME</button>
+        <button class="nav-btn active" data-screen="premium">PREMIUM</button>
+        <button class="nav-btn" data-screen="settings">SETTINGS</button>
+        <button class="nav-btn" data-screen="faq">FAQ</button>
+      </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="screen-settings" class="screen">
+      <div class="content-wrapper">
+        <div class="header header-small">
+          <div class="logo logo-small">SETTINGS</div>
+          <div class="tagline">CUSTOMIZE YOUR EXPERIENCE</div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">📊 Account Status</div>
+          <div class="settings-current">Status: <span id="settings-status" class="status-badge free">FREE</span></div>
+          <button class="btn btn-small" id="btn-manage-subscription" style="display: none;">MANAGE SUBSCRIPTION</button>
+          <button class="btn btn-primary btn-small" id="btn-upgrade-settings">UPGRADE TO PREMIUM</button>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">🏃 Activity</div>
+          <div class="settings-current">Currently tracking: <span id="settings-activity" class="settings-value">RUN</span></div>
+          <div class="settings-grid">
+            <button class="settings-option" data-setting-activity="run">RUN</button>
+            <button class="settings-option" data-setting-activity="lift">LIFT</button>
+            <button class="settings-option" data-setting-activity="swim">SWIM</button>
+            <button class="settings-option" data-setting-activity="bike">BIKE</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">📅 Frequency</div>
+          <div class="settings-current">Goal: <span id="settings-frequency" class="settings-value">5x/week</span></div>
+          <div class="settings-grid">
+            <button class="settings-option" data-setting-frequency="3">3x/week</button>
+            <button class="settings-option" data-setting-frequency="5">5x/week</button>
+            <button class="settings-option" data-setting-frequency="7">Daily</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">🔥 Notification Intensity</div>
+          <div class="settings-current">Current mode: <span id="settings-intensity" class="settings-value">REAL</span></div>
+          <div class="settings-grid">
+            <button class="settings-option" data-setting-intensity="chill">CHILL</button>
+            <button class="settings-option" data-setting-intensity="real">REAL</button>
+            <button class="settings-option" data-setting-intensity="brutal">BRUTAL 👑</button>
+          </div>
+          <div id="brutal-notice" style="font-size: 11px; color: var(--light-gray); margin-top: 10px; display: none;">👑 BRUTAL mode requires Premium</div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">🔔 Notifications</div>
+          <div class="settings-current">Status: <span id="settings-notifications" class="settings-value">ENABLED</span></div>
+          <button class="btn btn-small" id="btn-enable-notifications-settings">RE-ENABLE NOTIFICATIONS</button>
+        </div>
+
+        <div class="settings-section" style="border-color: var(--dark-red);">
+          <div class="settings-section-title" style="color: var(--dark-red);">⚠️ Danger Zone</div>
+          <button class="btn btn-danger btn-small" id="btn-reset-data">RESET ALL DATA</button>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="nav-btn" data-screen="home">HOME</button>
+        <button class="nav-btn" data-screen="premium">PREMIUM</button>
+        <button class="nav-btn active" data-screen="settings">SETTINGS</button>
+        <button class="nav-btn" data-screen="faq">FAQ</button>
+      </div>
+    </div>
+
+    <!-- FAQ Screen -->
+    <div id="screen-faq" class="screen">
+      <div class="content-wrapper">
+        <div class="header header-small">
+          <div class="logo logo-small">FAQ</div>
+          <div class="tagline">GOT QUESTIONS?</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do notifications work?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Y NOT RUN sends push notifications to remind you to work out. The number depends on your intensity: CHILL (2x/day), REAL (3x/day), or BRUTAL (8x/day, Premium only). Make sure notifications are enabled in your browser settings.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I cancel my subscription?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Go to Settings → Manage Subscription. This takes you to Stripe where you can cancel anytime. Premium features stay active until the end of your billing period.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">What is Streak Protection?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Premium users get one "skip pass" per week. Use it to skip a day without breaking your streak. Without it, skipping resets your streak to zero.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Why can't I use BRUTAL mode?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">BRUTAL mode is Premium only. It unlocks 8 notifications per day with maximum pressure. Upgrade for $2.99/month to access it.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I change notification times?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Custom times are a Premium feature. Once upgraded, go to Premium tab and use the time picker to select up to 8 specific notification times.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is my data private?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Yes. Your data is stored locally and in our secure Firebase database. We only store what's necessary for notifications and progress tracking. We never sell your data.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Notifications aren't working?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Try: 1) Enable notifications in browser settings. 2) Go to Settings and click "Re-enable Notifications". 3) Don't use incognito mode. 4) On mobile, check browser has notification permissions.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">How do I contact support?<span class="faq-toggle">+</span></div>
+          <div class="faq-answer"><div class="faq-answer-content">Email support@ynotrun.com. We typically respond within 24 hours.</div></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding: 20px;">
+          <div style="font-size: 11px; color: var(--light-gray); letter-spacing: 1px;">STILL HAVE QUESTIONS?</div>
+          <button class="btn btn-small" style="margin-top: 15px;" onclick="window.location.href='mailto:support@ynotrun.com'">CONTACT SUPPORT</button>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="nav-btn" data-screen="home">HOME</button>
+        <button class="nav-btn" data-screen="premium">PREMIUM</button>
+        <button class="nav-btn" data-screen="settings">SETTINGS</button>
+        <button class="nav-btn active" data-screen="faq">FAQ</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <!-- Firebase module (UPDATED: now includes AUTH + FIRESTORE) -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
+
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDNQtNS2I67kPOIRMVN2NB_qqY3X9lqf_k",
+      authDomain: "ynotrun-7cd5c.firebaseapp.com",
+      projectId: "ynotrun-7cd5c",
+      storageBucket: "ynotrun-7cd5c.firebasestorage.app",
+      messagingSenderId: "682603769946",
+      appId: "1:682603769946:web:6ea4a821df1380e65d6863"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    // Messaging
+    const messaging = getMessaging(app);
+    window.firebaseMessaging = messaging;
+    window.firebaseGetToken = getToken;
+
+    onMessage(messaging, (payload) => {
+      console.log('Message received:', payload);
+      if (Notification.permission === 'granted') {
+        new Notification(payload.notification.title, { body: payload.notification.body, icon: '🏃', requireInteraction: true });
+      }
+    });
+
+    // Auth + Firestore
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.firebaseAuthApi = { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut };
+    window.firebaseDbApi = { doc, onSnapshot, setDoc };
+  </script>
+
+  <script>
+    // ====== IMPORTANT ======
+    // You MUST deploy these Firebase Cloud Functions:
+    // 1) createCheckoutSession  (returns { url })
+    // 2) createPortalSession    (returns { url })  [optional but recommended]
+    //
+    // createCheckoutSession must use your LIVE Stripe keys + LIVE price:
+    // price_1Sq4km0dapXJpALOqQYBrWtH
+    //
+    // And your Stripe webhook must set: users/{uid}.isPremium = true/false
+    // =======================
+
+    const CREATE_CHECKOUT_URL = 'https://us-central1-ynotrun-7cd5c.cloudfunctions.net/createCheckoutSession';
+    const CREATE_PORTAL_URL   = 'https://us-central1-ynotrun-7cd5c.cloudfunctions.net/createPortalSession'; // optional
+
+    let appState = {
+      activity: null,
+      frequency: null,
+      intensity: null,
+      streak: 0,
+      weekData: [false,false,false,false,false,false,false],
+      excuses: [],
+      lastWorkout: null,
+      notificationsEnabled: false,
+      isPremium: false,
+      email: null,
+      uid: null,
+      skipPassesUsed: 0,
+      customNotificationTimes: [],
+      fcmToken: null
+    };
+
+    function loadState() {
+      const saved = localStorage.getItem('ynotrun_state');
+      if (saved) {
+        appState = { ...appState, ...JSON.parse(saved) };
+        updateHomeScreen();
         updateSettingsScreen();
-        if (appState.activity && appState.frequency && appState.intensity) showScreen('home'); else showScreen('activity');
+      }
+    }
+    function saveState() { localStorage.setItem('ynotrun_state', JSON.stringify(appState)); }
 
-        // Weekly reset
-        (function checkWeekReset() { const lastReset = localStorage.getItem('ynotrun_last_reset'); const now = new Date(); const currentMonday = new Date(now.setDate(now.getDate() - now.getDay() + 1)).toDateString(); if (lastReset !== currentMonday) { appState.weekData = [false,false,false,false,false,false,false]; appState.skipPassesUsed = 0; localStorage.setItem('ynotrun_last_reset', currentMonday); saveState(); } })();
-    </script>
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + screenId).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === screenId));
+      if (screenId === 'settings') updateSettingsScreen();
+    }
+
+    // ===== Auth UI (minimal, uses your existing permission screen) =====
+    function setAuthStatus(text) {
+      const el = document.getElementById('auth-status');
+      if (el) el.textContent = text;
+    }
+    function setLoggedInUI(isLoggedIn, email) {
+      document.getElementById('btn-logout').style.display = isLoggedIn ? 'block' : 'none';
+      setAuthStatus(isLoggedIn ? `Logged in: ${email}` : 'Not logged in');
+    }
+
+    async function signupOrLogin(mode) {
+      const emailInput = document.getElementById('user-email');
+      const passInput = document.getElementById('user-password');
+      const email = (emailInput?.value || '').trim();
+      const password = passInput?.value || '';
+
+      if (!email || !password) return alert('Enter email + password (6+ chars).');
+      if (password.length < 6) return alert('Password must be at least 6 characters.');
+
+      try {
+        const auth = window.firebaseAuth;
+        const api = window.firebaseAuthApi;
+
+        if (mode === 'signup') {
+          await api.createUserWithEmailAndPassword(auth, email, password);
+          alert('Account created.');
+        } else {
+          await api.signInWithEmailAndPassword(auth, email, password);
+          alert('Logged in.');
+        }
+
+        appState.email = email;
+        saveState();
+      } catch (e) {
+        console.error(e);
+        alert(e?.message || 'Auth error');
+      }
+    }
+
+    async function logout() {
+      try {
+        await window.firebaseAuthApi.signOut(window.firebaseAuth);
+        alert('Logged out.');
+      } catch (e) {
+        console.error(e);
+        alert('Logout failed.');
+      }
+    }
+
+    // Listen for auth state + sync premium from Firestore
+    function wireAuthListener() {
+      const auth = window.firebaseAuth;
+      const authApi = window.firebaseAuthApi;
+      const db = window.firebaseDb;
+      const dbApi = window.firebaseDbApi;
+
+      authApi.onAuthStateChanged(auth, (user) => {
+        if (user) {
+          appState.uid = user.uid;
+          appState.email = user.email || appState.email;
+          saveState();
+          setLoggedInUI(true, user.email || 'account');
+
+          // Subscribe to premium status from Firestore: users/{uid}
+          const userRef = dbApi.doc(db, 'users', user.uid);
+          dbApi.onSnapshot(userRef, (snap) => {
+            const data = snap.exists() ? snap.data() : null;
+            const premium = !!(data && data.isPremium);
+            appState.isPremium = premium;
+            saveState();
+            updatePremiumStatus();
+            updateSettingsScreen();
+          }, (err) => {
+            console.error('Firestore onSnapshot error:', err);
+          });
+
+        } else {
+          appState.uid = null;
+          appState.isPremium = false; // default
+          saveState();
+          setLoggedInUI(false, '');
+          updatePremiumStatus();
+          updateSettingsScreen();
+        }
+      });
+    }
+
+    // ===== Stripe checkout (LEGIT) =====
+    async function startCheckout() {
+      // Must be logged in, otherwise premium can't be tied to the user
+      const auth = window.firebaseAuth;
+      if (!auth || !auth.currentUser) {
+        alert('Create an account / log in first (on the notifications screen).');
+        showScreen('permission');
+        return;
+      }
+
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch(CREATE_CHECKOUT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({
+            successUrl: `${window.location.origin}/?success=true`,
+            cancelUrl: `${window.location.origin}/?canceled=true`
+          })
+        });
+
+        const data = await res.json();
+        if (!data || !data.url) {
+          console.error('Checkout response:', data);
+          alert('Checkout error. Check your Cloud Function logs.');
+          return;
+        }
+        window.location.href = data.url;
+      } catch (e) {
+        console.error(e);
+        alert('Checkout failed. Check console/logs.');
+      }
+    }
+
+    async function openBillingPortal() {
+      const auth = window.firebaseAuth;
+      if (!auth || !auth.currentUser) {
+        alert('Log in first.');
+        showScreen('permission');
+        return;
+      }
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch(CREATE_PORTAL_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({ returnUrl: window.location.origin })
+        });
+        const data = await res.json();
+        if (!data || !data.url) {
+          console.error('Portal response:', data);
+          alert('Portal error. Check your Cloud Function logs.');
+          return;
+        }
+        window.location.href = data.url;
+      } catch (e) {
+        console.error(e);
+        alert('Portal failed.');
+      }
+    }
+
+    // Onboarding
+    document.querySelectorAll('.activity-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        appState.activity = btn.dataset.activity;
+        document.getElementById('btn-continue-activity').disabled = false;
+      });
+    });
+    document.getElementById('btn-continue-activity').addEventListener('click', () => showScreen('frequency'));
+
+    document.querySelectorAll('.frequency-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.frequency-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        appState.frequency = parseInt(btn.dataset.frequency);
+        document.getElementById('btn-continue-frequency').disabled = false;
+      });
+    });
+    document.getElementById('btn-continue-frequency').addEventListener('click', () => showScreen('intensity'));
+    document.getElementById('btn-back-frequency').addEventListener('click', () => showScreen('activity'));
+
+    document.querySelectorAll('.intensity-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const intensity = btn.dataset.intensity;
+        if (intensity === 'brutal' && !appState.isPremium) { alert('BRUTAL mode requires premium.'); return; }
+        document.querySelectorAll('.intensity-option').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        appState.intensity = intensity;
+        document.getElementById('btn-continue-intensity').disabled = false;
+      });
+    });
+    document.getElementById('btn-continue-intensity').addEventListener('click', () => showScreen('permission'));
+    document.getElementById('btn-back-intensity').addEventListener('click', () => showScreen('frequency'));
+
+    // Auth buttons
+    document.getElementById('btn-signup').addEventListener('click', () => signupOrLogin('signup'));
+    document.getElementById('btn-login').addEventListener('click', () => signupOrLogin('login'));
+    document.getElementById('btn-logout').addEventListener('click', logout);
+
+    // Notifications
+    document.getElementById('btn-enable-notifications').addEventListener('click', async () => { await enableNotifications(); showScreen('home'); });
+    document.getElementById('btn-skip-notifications').addEventListener('click', () => {
+      const emailInput = document.getElementById('user-email');
+      if (emailInput && emailInput.value) { appState.email = emailInput.value.trim(); saveState(); }
+      alert('Fine. But don\'t blame us when you skip every workout.');
+      showScreen('home');
+    });
+
+    async function enableNotifications() {
+      const emailInput = document.getElementById('user-email');
+      if (emailInput && emailInput.value) appState.email = emailInput.value.trim();
+
+      if ('Notification' in window) {
+        const permission = await Notification.requestPermission();
+        appState.notificationsEnabled = (permission === 'granted');
+
+        if (appState.notificationsEnabled) {
+          try {
+            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            console.log('Service Worker registered:', registration);
+            await navigator.serviceWorker.ready;
+            console.log('Service Worker ready');
+
+            if (window.firebaseMessaging && window.firebaseGetToken) {
+              const token = await window.firebaseGetToken(window.firebaseMessaging, {
+                vapidKey: 'BO7gUuHBFaJW8YakqXVdr-uVlRsbHOlwZwf1vQ93Y_yuQKEiAubnxPfuCtCWwDJzFZ-_db1knnc7JSKTDW7dx_E',
+                serviceWorkerRegistration: registration
+              });
+              if (token) {
+                console.log('FCM Token:', token);
+                appState.fcmToken = token;
+                scheduleNotifications();
+                alert('Notifications enabled. No more excuses.');
+              }
+            }
+          } catch (error) { console.error('Service Worker registration failed:', error); }
+        } else {
+          alert('You denied notifications.');
+        }
+      }
+      saveState();
+    }
+
+    async function scheduleNotifications() {
+      if (!appState.notificationsEnabled || !appState.fcmToken) return;
+
+      let intervals =
+        appState.isPremium && appState.customNotificationTimes.length > 0
+          ? appState.customNotificationTimes
+          : appState.intensity === 'chill'
+            ? [10, 16]
+            : appState.intensity === 'brutal' && appState.isPremium
+              ? [7,9,11,13,15,17,19,21]
+              : [9, 13, 18];
+
+      console.log('Notification schedule:', intervals.map(t => t + ':00').join(', '));
+
+      try {
+        const response = await fetch('https://us-central1-ynotrun-7cd5c.cloudfunctions.net/updateUserSettings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fcmToken: appState.fcmToken,
+            email: appState.email,
+            intensity: appState.intensity,
+            isPremium: appState.isPremium,
+            customNotificationTimes: appState.customNotificationTimes,
+            notificationsEnabled: appState.notificationsEnabled,
+            uid: appState.uid || null
+          })
+        });
+        const result = await response.json();
+        console.log('Backend response:', result);
+        if (result.success) console.log('✅ Notifications successfully scheduled on server');
+      } catch (error) { console.error('Error updating notification settings:', error); }
+    }
+
+    // Home actions
+    document.getElementById('btn-log-workout').addEventListener('click', () => {
+      const today = new Date().getDay();
+      const dayIndex = today === 0 ? 6 : today - 1;
+      if (!appState.weekData[dayIndex]) {
+        appState.weekData[dayIndex] = true;
+        appState.streak++;
+        appState.lastWorkout = new Date().toISOString();
+        saveState();
+        updateHomeScreen();
+        alert('GOOD. Keep it up.');
+      } else {
+        alert('You already logged today.');
+      }
+    });
+
+    document.getElementById('btn-skip-today').addEventListener('click', () => {
+      if (appState.isPremium && appState.skipPassesUsed < 1) {
+        if (confirm('Use skip pass to protect streak?')) {
+          appState.skipPassesUsed++;
+          saveState();
+          alert('Skip pass used. Streak protected.');
+          return;
+        }
+      }
+      const excuse = prompt('Why are you skipping?');
+      if (excuse) {
+        appState.excuses.push({ date: new Date().toLocaleDateString(), reason: excuse });
+        appState.streak = 0;
+        saveState();
+        updateHomeScreen();
+        alert('Pathetic. Your excuse has been recorded.');
+      }
+    });
+
+    function updateHomeScreen() {
+      document.getElementById('streak-count').textContent = appState.streak;
+
+      const weekGrid = document.getElementById('week-grid');
+      const days = ['M','T','W','T','F','S','S'];
+      weekGrid.innerHTML = appState.weekData
+        .map((completed, i) => '<div class="day-box ' + (completed ? 'completed' : '') + '">' + days[i] + '</div>')
+        .join('');
+
+      const excuseList = document.getElementById('excuse-list');
+      if (appState.excuses.length === 0) {
+        excuseList.innerHTML = '<div class="excuse-title">YOUR EXCUSES THIS WEEK</div><div class="excuse-item">No excuses yet. Good.</div>';
+      } else {
+        excuseList.innerHTML =
+          '<div class="excuse-title">YOUR PATHETIC EXCUSES</div>' +
+          appState.excuses.slice(-5).reverse().map(e => '<div class="excuse-item">' + e.date + ': ' + e.reason + '</div>').join('');
+      }
+      updatePremiumStatus();
+    }
+
+    function updateSettingsScreen() {
+      const statusEl = document.getElementById('settings-status');
+
+      if (appState.isPremium) {
+        statusEl.textContent = 'PREMIUM';
+        statusEl.className = 'status-badge premium';
+        document.getElementById('btn-manage-subscription').style.display = 'block';
+        document.getElementById('btn-upgrade-settings').style.display = 'none';
+      } else {
+        statusEl.textContent = 'FREE';
+        statusEl.className = 'status-badge free';
+        document.getElementById('btn-manage-subscription').style.display = 'none';
+        document.getElementById('btn-upgrade-settings').style.display = 'block';
+      }
+
+      document.getElementById('settings-activity').textContent = (appState.activity || 'run').toUpperCase();
+      document.querySelectorAll('[data-setting-activity]').forEach(btn => btn.classList.toggle('selected', btn.dataset.settingActivity === appState.activity));
+
+      document.getElementById('settings-frequency').textContent = appState.frequency === 7 ? 'DAILY' : (appState.frequency ? appState.frequency + 'x/week' : '5x/week');
+      document.querySelectorAll('[data-setting-frequency]').forEach(btn => btn.classList.toggle('selected', parseInt(btn.dataset.settingFrequency) === appState.frequency));
+
+      document.getElementById('settings-intensity').textContent = (appState.intensity || 'real').toUpperCase();
+      document.querySelectorAll('[data-setting-intensity]').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.settingIntensity === appState.intensity);
+        btn.classList.toggle('disabled', btn.dataset.settingIntensity === 'brutal' && !appState.isPremium);
+      });
+
+      document.getElementById('brutal-notice').style.display = appState.isPremium ? 'none' : 'block';
+      document.getElementById('settings-notifications').textContent = appState.notificationsEnabled ? 'ENABLED' : 'DISABLED';
+    }
+
+    // Settings handlers
+    document.querySelectorAll('[data-setting-activity]').forEach(btn => {
+      btn.addEventListener('click', () => { appState.activity = btn.dataset.settingActivity; saveState(); updateSettingsScreen(); scheduleNotifications(); });
+    });
+    document.querySelectorAll('[data-setting-frequency]').forEach(btn => {
+      btn.addEventListener('click', () => { appState.frequency = parseInt(btn.dataset.settingFrequency); saveState(); updateSettingsScreen(); });
+    });
+    document.querySelectorAll('[data-setting-intensity]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.settingIntensity === 'brutal' && !appState.isPremium) { alert('BRUTAL mode requires Premium.'); return; }
+        appState.intensity = btn.dataset.settingIntensity;
+        saveState();
+        updateSettingsScreen();
+        scheduleNotifications();
+        alert('Intensity changed to ' + appState.intensity.toUpperCase());
+      });
+    });
+
+    document.getElementById('btn-enable-notifications-settings').addEventListener('click', async () => { await enableNotifications(); updateSettingsScreen(); });
+
+    // UPDATED: Legit upgrade + portal
+    document.getElementById('btn-upgrade-settings').addEventListener('click', startCheckout);
+    document.getElementById('btn-upgrade').addEventListener('click', startCheckout);
+
+    document.getElementById('btn-manage-subscription').addEventListener('click', () => {
+      // If you don’t deploy createPortalSession yet, this will tell you.
+      if (!CREATE_PORTAL_URL) return alert('Portal not set up yet.');
+      openBillingPortal();
+    });
+
+    document.getElementById('btn-reset-data').addEventListener('click', () => {
+      if (confirm('Reset ALL data? This cannot be undone.')) {
+        localStorage.removeItem('ynotrun_state');
+        localStorage.removeItem('ynotrun_last_reset');
+        alert('All data reset.');
+        location.reload();
+      }
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(q => q.addEventListener('click', () => q.parentElement.classList.toggle('open')));
+
+    // Time picker
+    function initTimePicker() {
+      const grid = document.getElementById('time-picker-grid');
+      grid.innerHTML = '';
+      for (let hour = 6; hour <= 22; hour++) {
+        const btn = document.createElement('button');
+        btn.className = 'time-slot';
+        btn.textContent = (hour > 12 ? hour - 12 : hour) + (hour >= 12 ? 'pm' : 'am');
+        if (appState.customNotificationTimes.includes(hour)) btn.classList.add('selected');
+        btn.addEventListener('click', () => {
+          const idx = appState.customNotificationTimes.indexOf(hour);
+          if (idx > -1) { appState.customNotificationTimes.splice(idx, 1); btn.classList.remove('selected'); }
+          else {
+            if (appState.customNotificationTimes.length >= 8) { alert('Max 8 times.'); return; }
+            appState.customNotificationTimes.push(hour);
+            appState.customNotificationTimes.sort((a,b) => a-b);
+            btn.classList.add('selected');
+          }
+          updateCurrentTimesDisplay();
+        });
+        grid.appendChild(btn);
+      }
+      updateCurrentTimesDisplay();
+    }
+
+    function updateCurrentTimesDisplay() {
+      const display = document.getElementById('current-times-display');
+      display.textContent =
+        appState.customNotificationTimes.length === 0
+          ? 'Select up to 8 times'
+          : 'Selected: ' + appState.customNotificationTimes
+              .map(h => (h > 12 ? h-12 : h) + (h >= 12 ? 'pm' : 'am'))
+              .join(', ');
+    }
+
+    document.getElementById('btn-save-times').addEventListener('click', () => {
+      if (appState.customNotificationTimes.length === 0) { alert('Select at least one time.'); return; }
+      saveState();
+      scheduleNotifications();
+      alert('Times saved!');
+    });
+
+    function updatePremiumStatus() {
+      const premiumBanner = document.getElementById('premium-banner');
+      const upgradeBtn = document.getElementById('btn-upgrade');
+      const homeTagline = document.getElementById('home-tagline');
+      const freeUserPrompt = document.getElementById('free-user-prompt');
+      const customTimesSection = document.getElementById('custom-times-section');
+
+      if (appState.isPremium) {
+        if (premiumBanner) premiumBanner.style.display = 'none';
+        if (upgradeBtn) upgradeBtn.style.display = 'none';
+        if (freeUserPrompt) freeUserPrompt.style.display = 'none';
+
+        if (customTimesSection) { customTimesSection.classList.add('visible'); initTimePicker(); }
+        if (homeTagline) { homeTagline.innerHTML = 'PREMIUM ACTIVE'; homeTagline.style.color = 'var(--red)'; }
+
+        document.querySelectorAll('.premium-feature').forEach(f => {
+          f.classList.remove('locked'); f.classList.add('unlocked');
+          const s = f.querySelector('.premium-feature-status');
+          if (s) s.textContent = '✓ UNLOCKED';
+        });
+      } else {
+        if (freeUserPrompt) freeUserPrompt.style.display = 'block';
+        if (customTimesSection) customTimesSection.classList.remove('visible');
+
+        document.querySelectorAll('.premium-feature').forEach(f => {
+          f.classList.add('locked'); f.classList.remove('unlocked');
+          const s = f.querySelector('.premium-feature-status');
+          if (s) s.textContent = '🔒 LOCKED';
+        });
+      }
+    }
+
+    // Navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
+
+    // Init
+    loadState();
+
+    // IMPORTANT CHANGE: we do NOT activate premium from URL params anymore
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      alert('Payment received! Premium will activate in a moment.');
+    }
+    if (urlParams.get('canceled') === 'true') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      alert('Payment canceled.');
+    }
+
+    updatePremiumStatus();
+    updateSettingsScreen();
+
+    // If auth isn't ready yet, we still let onboarding run.
+    // Premium will sync automatically after login via Firestore listener.
+    window.addEventListener('load', () => {
+      try { wireAuthListener(); } catch (e) { console.warn('Auth listener not ready yet:', e); }
+    });
+
+    if (appState.activity && appState.frequency && appState.intensity) showScreen('home'); else showScreen('activity');
+
+    // Weekly reset
+    (function checkWeekReset() {
+      const lastReset = localStorage.getItem('ynotrun_last_reset');
+      const now = new Date();
+      const currentMonday = new Date(now.setDate(now.getDate() - now.getDay() + 1)).toDateString();
+      if (lastReset !== currentMonday) {
+        appState.weekData = [false,false,false,false,false,false,false];
+        appState.skipPassesUsed = 0;
+        localStorage.setItem('ynotrun_last_reset', currentMonday);
+        saveState();
+      }
+    })();
+  </script>
 </body>
 </html>
