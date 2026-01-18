@@ -774,9 +774,11 @@
             }); 
         });
         document.getElementById('btn-enable-notifications-settings').addEventListener('click', async () => { await enableNotifications(); updateSettingsScreen(); });
+        
+        // FIXED: Open payment in new tab instead of redirecting
         document.getElementById('btn-upgrade-settings').addEventListener('click', () => { 
             if (window.currentUser) {
-                window.location.href = PAYMENT_LINK + '?client_reference_id=' + window.currentUser.uid;
+                window.open(PAYMENT_LINK + '?client_reference_id=' + window.currentUser.uid, '_blank');
             }
         });
         document.getElementById('btn-manage-subscription').addEventListener('click', () => { alert('To manage your subscription, email support@ynotrun.com'); });
@@ -839,9 +841,11 @@
 
         // Navigation
         document.querySelectorAll('.nav-btn').forEach(btn => { btn.addEventListener('click', () => showScreen(btn.dataset.screen)); });
+        
+        // FIXED: Open payment in new tab instead of redirecting
         document.getElementById('btn-upgrade').addEventListener('click', () => { 
             if (window.currentUser) {
-                window.location.href = PAYMENT_LINK + '?client_reference_id=' + window.currentUser.uid;
+                window.open(PAYMENT_LINK + '?client_reference_id=' + window.currentUser.uid, '_blank');
             }
         });
 
